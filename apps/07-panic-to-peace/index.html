@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#1B1A1A">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Noto+Serif:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<title>The Well — Panic to Peace</title>
+<style>
+    :root{
+    --ink:#1B1A1A;
+    --ink2:#262524;
+    --accent:#FD5200;
+    --accent-soft:#ff6a1f;
+    --paper:#F5F2EB;
+    --muted:#CFC8C8;
+    --card:rgba(255,255,255,.045);
+    --line:rgba(253,82,0,.28);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:'Montserrat',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    background:radial-gradient(120% 90% at 50% 0%, #2b2826 0%, var(--ink) 55%, #0e0d0c 100%);
+    color:var(--paper);
+    min-height:100dvh;
+    display:flex;justify-content:center;
+    -webkit-font-smoothing:antialiased;
+  }
+  .app{
+    width:100%;max-width:430px;min-height:100dvh;
+    display:flex;flex-direction:column;
+    padding:28px 24px calc(20px + env(safe-area-inset-bottom));
+    position:relative;
+  }
+  /* Extra room at the bottom during the sequence so the fixed 988 pill
+     never covers the footer. */
+  body.in-seq .app{padding-bottom:calc(76px + env(safe-area-inset-bottom))}
+  .screen{display:none;flex-direction:column;flex:1;animation:rise .5s ease both}
+  .screen.active{display:flex}
+  @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+  /* ---------- shared ---------- */
+  h1{
+    text-align:center;font-weight:700;letter-spacing:.42em;text-indent:.42em;
+    font-size:19px;color:var(--accent-soft);margin-bottom:10px;
+  }
+  .tagline{text-align:center;color:var(--muted);font-size:13.5px;letter-spacing:.06em;margin-bottom:26px}
+  .kicker{
+    text-align:center;color:var(--accent);font-size:12px;font-weight:700;
+    letter-spacing:.32em;text-indent:.32em;margin:8px 0 12px;
+  }
+  button{
+    font:inherit;cursor:pointer;border:none;border-radius:14px;
+    padding:16px;font-size:16.5px;font-weight:700;letter-spacing:.02em;
+    transition:transform .12s, filter .2s;
+  }
+  button:active{transform:scale(.985)}
+  .primary{
+    background:var(--accent);
+    color:#fff;margin-top:8px;
+    box-shadow:0 8px 28px rgba(253,82,0,.28);
+  }
+  .primary:hover{filter:brightness(1.06)}
+  .primary.big{padding:24px;font-size:22px;border-radius:18px}
+  .ghost{
+    background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,.14);
+    margin-top:12px;font-weight:600;font-size:15px;
+  }
+  .privacy{
+    text-align:center;color:var(--muted);font-size:12.5px;line-height:1.6;
+    margin-top:22px;padding:0 8px;
+  }
+  .privacy b{color:var(--accent-soft);font-weight:600}
+  .verse-card{
+    background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:22px 20px;margin-bottom:26px;position:relative;overflow:hidden;
+  }
+  .verse-card::before{
+    content:"\201C";position:absolute;top:2px;left:14px;
+    font-family:'Noto Serif',Georgia,serif;font-size:64px;color:rgba(253,82,0,.16);line-height:1;
+  }
+  .verse{
+    font-family:'Noto Serif',Georgia,serif;font-size:18.5px;line-height:1.65;
+    margin-bottom:12px;position:relative;
+  }
+  .ref{text-align:right;color:var(--accent-soft);font-size:13.5px;letter-spacing:.08em;font-weight:600}
+
+  /* ---------- landing ---------- */
+  .glow-wrap{height:150px;margin:26px 0 18px;display:flex;align-items:center;justify-content:center}
+  .glow{
+    width:88px;height:88px;border-radius:50%;
+    background:radial-gradient(circle at 40% 35%, #ffe9d6 0%, var(--accent-soft) 35%, var(--accent) 65%, #4a2410 100%);
+    box-shadow:0 0 46px rgba(253,82,0,.5), 0 0 110px rgba(253,82,0,.22);
+    animation:glowidle 6s ease-in-out infinite;
+  }
+  @keyframes glowidle{0%,100%{transform:scale(1);opacity:.85}50%{transform:scale(1.12);opacity:1}}
+
+  /* ---------- sequence ---------- */
+  .progress{
+    height:4px;background:rgba(255,255,255,.08);border-radius:999px;
+    overflow:hidden;margin:4px 0 8px;
+  }
+  .progress-fill{
+    height:100%;width:0;
+    background:linear-gradient(90deg,var(--accent),var(--accent-soft));
+    border-radius:999px;
+  }
+  .remaining{
+    text-align:center;color:var(--muted);font-size:12px;
+    letter-spacing:.18em;margin-bottom:4px;
+  }
+  .breath-wrap{height:210px;display:flex;align-items:center;justify-content:center;margin:14px 0 4px}
+  .breath-light{
+    width:118px;height:118px;border-radius:50%;
+    background:radial-gradient(circle at 40% 35%, #ffe9d6 0%, var(--accent-soft) 32%, var(--accent) 58%, #4a2410 100%);
+    box-shadow:0 0 60px rgba(253,82,0,.55), 0 0 140px rgba(253,82,0,.25);
+    transform:scale(1);
+    will-change:transform;
+  }
+  .cue{
+    text-align:center;color:var(--accent-soft);
+    font-family:'Noto Serif',Georgia,serif;font-style:italic;
+    font-size:19px;letter-spacing:.14em;min-height:28px;margin-bottom:14px;
+  }
+  .cue.swap{animation:cuefade .8s ease}
+  @keyframes cuefade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .truth-wrap{min-height:104px;display:flex;align-items:flex-start;justify-content:center;transition:opacity .9s ease}
+  .truth-wrap.gone{opacity:0}
+  .truth{
+    font-family:'Noto Serif',Georgia,serif;font-size:20px;line-height:1.6;
+    text-align:center;color:var(--paper);padding:0 8px;
+    transition:opacity .6s ease;
+  }
+  .truth.fading{opacity:0}
+  .prayer-lines{margin-top:6px}
+  .pline{
+    opacity:0;transform:translateY(10px);
+    transition:opacity 1.2s ease, transform 1.2s ease;
+    font-family:'Noto Serif',Georgia,serif;font-size:17.5px;line-height:1.7;
+    text-align:center;margin-bottom:14px;color:#F5F2EB;padding:0 6px;
+  }
+  .pline.revealed{opacity:1;transform:none}
+  .pline.amen{color:var(--accent-soft);font-weight:700}
+
+  /* ---------- closing ---------- */
+  .still{
+    font-family:'Noto Serif',Georgia,serif;font-size:34px;line-height:1.3;
+    text-align:center;color:var(--paper);margin:18px 0 24px;
+  }
+
+  /* ---------- 988: always visible ---------- */
+  footer{
+    margin-top:auto;padding-top:26px;text-align:center;
+    color:#8a8484;font-size:11.5px;letter-spacing:.06em;line-height:1.7;
+  }
+  .crisis-link{
+    display:inline-block;color:#f0d9d6;font-size:13px;letter-spacing:.04em;
+    text-decoration:none;border:1px solid rgba(192,86,79,.55);border-radius:999px;
+    padding:8px 16px;margin-bottom:10px;background:rgba(192,86,79,.08);
+  }
+  .crisis-link b{color:#fff}
+  /* Persistent fixed pill during the 90-second sequence, so the 988 line
+     stays on screen even if the user scrolls. */
+  .crisis-fixed{
+    position:fixed;left:50%;transform:translateX(-50%);
+    bottom:calc(14px + env(safe-area-inset-bottom));
+    background:rgba(11,16,32,.94);border:1px solid #c0564f;color:#f0d9d6;
+    font-size:12.5px;padding:10px 18px;border-radius:999px;
+    z-index:50;white-space:nowrap;
+    box-shadow:0 6px 24px rgba(0,0,0,.5);
+  }
+  .crisis-fixed a{color:#fff;font-weight:700;text-decoration:none}
+  .crisis-fixed[hidden]{display:none}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- SCREEN 1 : landing — one button, nothing else to decide -->
+  <section id="screen-home" class="screen active">
+    <div class="glow-wrap"><div class="glow"></div></div>
+    <h1>PANIC TO PEACE</h1>
+    <p class="tagline">Ninety seconds. One light. Just breathe.</p>
+    <div style="height:14px"></div>
+    <button class="primary big" id="panicBtn">I&rsquo;m panicking.</button>
+    <p class="privacy"><b>Nothing to sign up for. Nothing to decide.</b><br>For the next 90 seconds, just follow the light.</p>
+  </section>
+
+  <!-- SCREEN 2 : the 90-second sequence — no decisions, just the light -->
+  <section id="screen-seq" class="screen">
+    <div class="progress"><div class="progress-fill" id="bar"></div></div>
+    <p class="remaining" id="remaining">1:30 left</p>
+    <div class="breath-wrap"><div class="breath-light" id="light"></div></div>
+    <p class="cue" id="cue">breathe in</p>
+    <div class="truth-wrap" id="truthWrap">
+      <p class="truth" id="truth"></p>
+    </div>
+    <div class="prayer-lines" id="prayerLines"></div>
+  </section>
+
+  <!-- SCREEN 3 : closing -->
+  <section id="screen-done" class="screen" style="justify-content:center">
+    <p class="kicker">NINETY SECONDS LATER</p>
+    <p class="still">You&rsquo;re still here.</p>
+    <div class="verse-card">
+      <p class="verse">So do not fear, for I am with you; do not be dismayed, for I am your God. I will strengthen you and help you; I will uphold you with my righteous right hand.</p>
+      <p class="ref">Isaiah 41:10 &middot; NIV</p>
+    </div>
+    <button class="primary" id="again">Again</button>
+    <button class="ghost" id="calm">Return to calm</button>
+  </section>
+
+  <footer>
+    <a class="crisis-link" href="tel:988">In crisis? Call or text <b>988</b></a><br>
+    A Twlv2 Well experiment &middot; prototype
+  </footer>
+</div>
+
+<!-- Fixed 988 pill: visible ONLY during the 90-second sequence -->
+<div class="crisis-fixed" id="crisisFixed" hidden>In crisis? <a href="tel:988">Call or text 988</a></div>
+
+<script>
+(function(){
+  "use strict";
+  var $ = function(id){ return document.getElementById(id); };
+
+  /* ============================================================
+     THE 90-SECOND SEQUENCE — honest wall-clock timer
+     ------------------------------------------------------------
+     Every visual is derived from ONE elapsed value
+     (performance.now() - startedAt), so the whole loop stays in
+     sync even if frames drop or the tab sleeps.
+
+     TIMELINE (all milliseconds):
+       0 – 72,000     breathing light + 6 calming truths (12s each)
+       72,000 – 90,000  closing prayer, 4 lines fading in one by one
+       90,000         sequence ends -> closing screen
+
+     Breath cycle: 4s inhale + 6s exhale = 10s -> exactly 9 cycles
+     in 90 seconds. Truths: 6 x 12s = 72s. Prayer: 90 - 72 = 18s.
+     ============================================================ */
+  var SEQ_MS    = 90000;  // total sequence length
+  var TRUTH_MS  = 12000;  // each calming truth on screen
+  var TRUTH_N   = 6;      // 6 truths x 12s = 72,000ms
+  var PRAYER_AT = TRUTH_N * TRUTH_MS; // 72,000 — prayer phase begins
+  var IN_MS     = 4000;   // breathe in
+  var OUT_MS    = 6000;   // breathe out (4 + 6 = 10s breath cycle)
+
+  var TRUTHS = [
+    "This feeling will pass. It always does.",
+    "You are not in danger. Your body just thinks you are.",
+    "God is not panicking about you.",
+    "Slow breaths tell your body the threat is over.",
+    "You have survived every hard moment before this one.",
+    "Right now, all you have to do is breathe."
+  ];
+
+  // Prayer lines fade in during the final 18 seconds (72s–90s).
+  var PRAYER = [
+    { at: 72000, text: "Father, I can't slow my own heart \u2014 so slow it for me." },
+    { at: 76500, text: "Trade this panic for Your peace, breath by breath." },
+    { at: 81000, text: "You are here. You are not in a hurry." },
+    { at: 85500, text: "In Jesus\u2019 name, amen.", amen: true }
+  ];
+
+  var raf = null;        // requestAnimationFrame handle
+  var runGen = 0;        // increments every start/finish; stale timers check it
+  var startedAt = 0;     // performance.now() at sequence start
+  var lastTruth = -1;    // index of the truth currently shown
+  var truthSwapT = null; // pending truth crossfade timer
+
+  // Build the prayer lines once (each reveals independently via CSS).
+  var plinesEl = $("prayerLines");
+  PRAYER.forEach(function(line){
+    var p = document.createElement("p");
+    p.className = "pline" + (line.amen ? " amen" : "");
+    p.textContent = line.text;
+    plinesEl.appendChild(p);
+  });
+
+  function easeInOut(t){ // smooth the light's expansion/contraction
+    return t < 0.5 ? 2*t*t : 1 - Math.pow(-2*t + 2, 2) / 2;
+  }
+  function fmtClock(sec){ // 90 -> "1:30", 7 -> "0:07"
+    return Math.floor(sec/60) + ":" + String(sec % 60).padStart(2, "0");
+  }
+
+  function show(id){
+    var screens = document.querySelectorAll(".screen");
+    for (var i = 0; i < screens.length; i++) screens[i].classList.remove("active");
+    $(id).classList.add("active");
+    var inSeq = (id === "screen-seq");
+    $("crisisFixed").hidden = !inSeq;          // fixed 988 pill only during sequence
+    document.body.classList.toggle("in-seq", inSeq); // extra footer clearance
+    window.scrollTo(0, 0);
+  }
+
+  // Crossfade to the next truth. The generation guard makes sure a swap
+  // scheduled before a restart can never paint stale text.
+  function swapTruth(idx){
+    var gen = runGen;
+    var truthEl = $("truth");
+    truthEl.classList.add("fading");
+    if (truthSwapT) clearTimeout(truthSwapT);
+    truthSwapT = setTimeout(function(){
+      truthSwapT = null;
+      if (gen !== runGen) return; // a newer run started; stay silent
+      truthEl.textContent = TRUTHS[idx];
+      truthEl.classList.remove("fading");
+    }, 600);
+  }
+
+  function tick(now){
+    var el = now - startedAt;
+    if (el >= SEQ_MS){ finishSequence(); return; }
+
+    // --- progress bar + quiet countdown ---
+    $("bar").style.width = (el / SEQ_MS * 100).toFixed(2) + "%";
+    $("remaining").textContent = fmtClock(Math.ceil((SEQ_MS - el) / 1000)) + " left";
+
+    // --- breathing light: 4s inhale (grow 1.0 -> 1.55), 6s exhale (shrink back) ---
+    var phase = el % (IN_MS + OUT_MS);
+    var inhale = phase < IN_MS;
+    var s;
+    if (inhale) s = 1 + 0.55 * easeInOut(phase / IN_MS);
+    else        s = 1.55 - 0.55 * easeInOut((phase - IN_MS) / OUT_MS);
+    $("light").style.transform = "scale(" + s.toFixed(3) + ")";
+    var cueText = inhale ? "breathe in" : "breathe out";
+    var cueEl = $("cue");
+    if (cueEl.textContent !== cueText){
+      cueEl.textContent = cueText;
+      cueEl.classList.remove("swap"); void cueEl.offsetWidth; cueEl.classList.add("swap");
+    }
+
+    // --- truths (0–72s), then prayer phase (72–90s) ---
+    if (el < PRAYER_AT){
+      var idx = Math.min(TRUTH_N - 1, Math.floor(el / TRUTH_MS));
+      if (idx !== lastTruth){ lastTruth = idx; swapTruth(idx); }
+    } else {
+      if (lastTruth !== -2){ // first frame of the prayer phase: retire the truths
+        lastTruth = -2;
+        $("truthWrap").classList.add("gone");
+      }
+      var lines = plinesEl.children;
+      for (var i = 0; i < PRAYER.length; i++){
+        if (el >= PRAYER[i].at) lines[i].classList.add("revealed");
+      }
+    }
+
+    raf = requestAnimationFrame(tick);
+  }
+
+  function startSequence(){
+    runGen++;                              // invalidate any stale timers
+    if (raf) cancelAnimationFrame(raf);
+    if (truthSwapT){ clearTimeout(truthSwapT); truthSwapT = null; }
+
+    // reset every visual to second zero
+    $("bar").style.width = "0%";
+    $("remaining").textContent = "1:30 left";
+    $("light").style.transform = "scale(1)";
+    $("cue").textContent = "breathe in";
+    $("truth").textContent = TRUTHS[0];
+    $("truth").classList.remove("fading");
+    $("truthWrap").classList.remove("gone");
+    var lines = plinesEl.children;
+    for (var i = 0; i < lines.length; i++) lines[i].classList.remove("revealed");
+    lastTruth = 0;                          // truth 0 already on screen
+
+    startedAt = performance.now();
+    show("screen-seq");
+    raf = requestAnimationFrame(tick);
+  }
+
+  function finishSequence(){
+    if (raf) cancelAnimationFrame(raf);
+    raf = null;
+    if (truthSwapT){ clearTimeout(truthSwapT); truthSwapT = null; }
+    runGen++;                               // invalidate any stragglers
+    show("screen-done");
+  }
+
+  function stopAndHome(){
+    if (raf) cancelAnimationFrame(raf);
+    raf = null;
+    if (truthSwapT){ clearTimeout(truthSwapT); truthSwapT = null; }
+    runGen++;
+    show("screen-home");
+  }
+
+  $("panicBtn").addEventListener("click", startSequence);
+  $("again").addEventListener("click", startSequence); // replay: full 90s again
+  $("calm").addEventListener("click", stopAndHome);
+})();
+</script>
+</body>
+</html>

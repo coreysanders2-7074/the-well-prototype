@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#1B1A1A">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Noto+Serif:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<title>The Well — The Doubt Room</title>
+<style>
+    :root{
+    --ink:#1B1A1A;
+    --ink2:#262524;
+    --accent:#FD5200;
+    --accent-soft:#ff6a1f;
+    --paper:#F5F2EB;
+    --muted:#CFC8C8;
+    --card:rgba(255,255,255,.045);
+    --line:rgba(253,82,0,.28);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:'Montserrat',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    background:radial-gradient(120% 90% at 50% 0%, #2b2826 0%, var(--ink) 55%, #0e0d0c 100%);
+    color:var(--paper);
+    min-height:100dvh;
+    display:flex;justify-content:center;
+    -webkit-font-smoothing:antialiased;
+  }
+  .app{
+    width:100%;max-width:430px;min-height:100dvh;
+    display:flex;flex-direction:column;
+    padding:28px 24px calc(20px + env(safe-area-inset-bottom));
+    position:relative;
+  }
+  .screen{display:none;flex-direction:column;flex:1;animation:rise .5s ease both}
+  .screen.active{display:flex}
+  @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+  /* ---------- landing ---------- */
+  .room-mark{
+    width:64px;height:64px;border-radius:50%;margin:4px auto 18px;
+    border:1px solid var(--line);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Montserrat',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:30px;color:var(--accent-soft);
+    box-shadow:0 0 42px rgba(253,82,0,.18), inset 0 0 18px rgba(0,0,0,.6);
+    background:radial-gradient(circle at 35% 30%, #4a2410 0%, #241109 60%, #120a06 100%);
+  }
+  h1{
+    text-align:center;font-weight:700;letter-spacing:.38em;text-indent:.38em;
+    font-size:19px;color:var(--accent-soft);margin-bottom:14px;
+  }
+  .headline{
+    font-family:'Noto Serif',Georgia,serif;font-size:24px;line-height:1.45;
+    text-align:center;margin-bottom:12px;color:var(--paper);
+  }
+  .subline{
+    text-align:center;color:var(--muted);font-size:14.5px;line-height:1.6;
+    margin-bottom:26px;padding:0 10px;
+  }
+  .chips{display:flex;flex-direction:column;gap:10px}
+  .chip{
+    text-align:left;background:var(--card);border:1px solid rgba(255,255,255,.12);
+    border-radius:14px;padding:16px 18px;color:var(--paper);
+    font-size:15.5px;line-height:1.5;font-weight:600;
+    transition:border .2s, transform .12s;
+  }
+  .chip:hover{border-color:var(--accent)}
+  .chip:active{transform:scale(.985)}
+  .chip .arrow{float:right;color:var(--accent);font-weight:400}
+  .privacy{
+    text-align:center;color:var(--muted);font-size:12.5px;line-height:1.6;
+    margin-top:24px;padding:0 8px;
+  }
+  .privacy b{color:var(--accent-soft);font-weight:600}
+
+  /* ---------- answer ---------- */
+  .kicker{
+    text-align:center;color:var(--accent);font-size:12px;font-weight:700;
+    letter-spacing:.3em;text-indent:.3em;margin:6px 0 14px;
+  }
+  .question-title{
+    font-family:'Noto Serif',Georgia,serif;font-size:21px;line-height:1.5;
+    color:var(--paper);margin-bottom:20px;text-align:center;
+  }
+  .answer p{
+    font-family:'Noto Serif',Georgia,serif;
+    font-size:15.5px;line-height:1.8;color:#F5F2EB;margin-bottom:16px;
+  }
+  .gentle{
+    border-left:3px solid var(--accent);border-radius:0 12px 12px 0;
+    background:rgba(255,255,255,.03);padding:16px 18px;margin:8px 0 6px;
+  }
+  .gentle p{
+    font-family:'Noto Serif',Georgia,serif;font-style:italic;font-size:16.5px;line-height:1.65;
+    color:var(--accent-soft);margin:0;
+  }
+  .crisis{
+    border:1px solid #c0564f;background:rgba(192,86,79,.1);border-radius:12px;
+    padding:14px 16px;margin:18px 0 4px;font-size:14px;line-height:1.6;color:#f0d9d6;
+  }
+  .crisis b{color:#fff}
+  button{
+    font:inherit;cursor:pointer;border:none;border-radius:14px;
+    padding:16px;font-size:16.5px;font-weight:700;letter-spacing:.02em;
+    transition:transform .12s, filter .2s;
+  }
+  button:active{transform:scale(.985)}
+  .primary{
+    background:var(--accent);
+    color:#fff;margin-top:16px;
+    box-shadow:0 8px 28px rgba(253,82,0,.28);
+  }
+  .primary:hover{filter:brightness(1.06)}
+  .ghost{
+    background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,.14);
+    margin-top:12px;font-weight:600;font-size:15px;
+  }
+
+  /* ---------- stillness timer ---------- */
+  .stillness{
+    margin-top:18px;background:var(--card);border:1px solid rgba(255,255,255,.1);
+    border-radius:16px;padding:20px;text-align:center;
+  }
+  .stillness .breath-ring{
+    width:88px;height:88px;border-radius:50%;margin:4px auto 14px;
+    border:1px solid var(--line);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Montserrat',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:26px;color:var(--accent-soft);
+  }
+  .stillness.breathing .breath-ring{
+    animation:breathe 8s ease-in-out infinite;
+  }
+  @keyframes breathe{
+    0%,100%{transform:scale(.86);opacity:.65}
+    50%{transform:scale(1.08);opacity:1}
+  }
+  .stillness p{font-size:14px;line-height:1.65;color:var(--muted);margin-bottom:12px}
+  .stillness p.done{color:var(--accent-soft);font-family:'Noto Serif',Georgia,serif;font-style:italic;font-size:16px}
+  .stillness .timer-btn{
+    background:transparent;color:var(--accent-soft);border:1px solid var(--line);
+    padding:12px 20px;font-size:14.5px;font-weight:600;
+  }
+  .stillness .cancel-btn{
+    background:none;border:none;color:#8a8484;font-size:13px;
+    padding:8px;margin-top:6px;font-weight:500;
+  }
+
+  footer{
+    margin-top:auto;padding-top:26px;text-align:center;
+    color:#8a8484;font-size:11.5px;letter-spacing:.06em;line-height:1.7;
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- SCREEN 1 : the room -->
+  <section id="screen-room" class="screen active">
+    <div class="room-mark">?</div>
+    <h1>THE DOUBT ROOM</h1>
+    <p class="headline">Doubt is a doorway,<br>not a disease.</p>
+    <p class="subline">Ask the question you&rsquo;ve been afraid to ask out loud.<br>No one here will flinch.</p>
+    <div class="chips" id="chips"></div>
+    <p class="privacy"><b>No names. No judgment. No record.</b><br>Just honest answers from a friend who&rsquo;s sat with these too.</p>
+  </section>
+
+  <!-- SCREEN 2 : the answer -->
+  <section id="screen-answer" class="screen">
+    <p class="kicker">THE DOUBT ROOM</p>
+    <h2 class="question-title" id="q-title"></h2>
+    <div class="answer" id="q-body"></div>
+    <div class="gentle"><p id="q-closing"></p></div>
+    <div class="crisis" id="q-crisis" hidden>
+      <b>If you&rsquo;re thinking about harming yourself, stop and call or text 988 right now.</b>
+      Someone trained and kind is there 24/7. Your doubt is welcome here &mdash; and so are you.
+    </div>
+
+    <div class="stillness" id="stillness">
+      <div class="breath-ring" id="breath-ring">&infin;</div>
+      <p id="still-text">Want to sit with this for a moment?<br>Thirty seconds. No noise. Just breathe.</p>
+      <button class="timer-btn" id="still-btn">Take 30 seconds</button><br>
+      <button class="cancel-btn" id="still-cancel" hidden>End early</button>
+    </div>
+
+    <button class="primary" id="ask-another">Ask another</button>
+    <button class="ghost" id="back-room">Back to the room</button>
+  </section>
+
+  <footer>A Twlv2 Well experiment &middot; prototype</footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var $ = function(id){ return document.getElementById(id); };
+
+  /* ---------- the six forbidden questions, answered honestly ---------- */
+  var QUESTIONS = [
+    {
+      label: "Why does God allow suffering?",
+      crisis: true,
+      body: [
+        "Let\u2019s start where honesty starts: this is the hardest question there is. Anyone who answers it quickly either hasn\u2019t suffered much or isn\u2019t paying attention. The weight you feel behind this question is the right weight.",
+        "A large part of the answer lives in freedom. God made a world where love is real \u2014 and real love requires real choice. That means people can choose cruelty, greed, and neglect, and the rest of us live downstream of those choices. Add a world that groans under brokenness \u2014 disease, disaster, decay \u2014 and suffering isn\u2019t an anomaly. It\u2019s what a fractured world produces.",
+        "But here\u2019s what changed everything for people of faith: God didn\u2019t stay above the suffering and explain it. He entered it. The cross is Christianity\u2019s claim that God knows what it is to bleed, to grieve, to be abandoned. Whatever suffering is, we don\u2019t face a God who watched from a distance.",
+        "There are no easy answers here, and anyone who hands you one is selling something. What faith offers isn\u2019t an explanation \u2014 it\u2019s a companion in the dark, and a promise that the story doesn\u2019t end in the dark."
+      ],
+      closing: "You don\u2019t have to resolve this tonight. Sitting with the question honestly is more faithful than a cheap answer."
+    },
+    {
+      label: "Aren\u2019t Christians just hypocrites?",
+      crisis: false,
+      body: [
+        "Name it plainly: yes, some are. The church has earned this question honestly \u2014 judgment without love, rules for others that leaders don\u2019t keep themselves, scandal after scandal. If you\u2019ve been burned by Christians, your skepticism isn\u2019t cynicism. It\u2019s evidence.",
+        "Here\u2019s the part that rarely gets said: Jesus\u2019 harshest words were reserved for religious hypocrites. He ate with outcasts and saved his anger for the polished, performing religious elite. The thing you hate about the church? He hated it first, and louder.",
+        "The invitation underneath all of it was never \u201Cbe like these people.\u201D It was \u201Ccome to me.\u201D Don\u2019t judge Jesus by his worst followers \u2014 judge a movement by its founder, and judge the founder by what he actually said and did.",
+        "And one more honest thing: the church is a hospital, not a museum. It\u2019s full of people who know they\u2019re sick. Some of them are terrible patients. That doesn\u2019t mean the medicine doesn\u2019t work."
+      ],
+      closing: "Your hurt is valid \u2014 and it doesn\u2019t have to be the last word on faith."
+    },
+    {
+      label: "Doesn\u2019t science disprove God?",
+      crisis: false,
+      body: [
+        "It\u2019s a fair question, and it deserves better than a slogan. But notice what science actually does: it describes how the universe works \u2014 the mechanisms, the measurements, the math. It\u2019s silent on why there\u2019s a universe at all, or why it\u2019s so strangely fine-tuned, or why your mind can even comprehend it.",
+        "The \u201Cconflict\u201D between science and faith is mostly a modern myth. Many of the giants of science \u2014 Newton, Kepler, Faraday, and plenty of working scientists today \u2014 saw their discoveries as reading the mind of God. They didn\u2019t think science replaced faith; they thought it deepened the wonder.",
+        "Where tension exists, it\u2019s usually between a particular reading of an ancient text and a particular scientific claim \u2014 not between science itself and faith itself. Thoughtful Christians and thoughtful scientists have been working that out for centuries.",
+        "Here\u2019s the quiet truth: wonder is a doorway. The deeper science goes, the stranger and more astonishing reality gets. Some people look at that and see accident. Others look at it and see intention. Both are interpretations \u2014 and you\u2019re allowed to follow yours honestly."
+      ],
+      closing: "Keep asking. The God worth believing in isn\u2019t threatened by your curiosity."
+    },
+    {
+      label: "How could a loving God send people to hell?",
+      crisis: false,
+      body: [
+        "Take this question seriously, because it\u2019s a serious one. If God is love, how does hell fit? Thoughtful Christians have wrestled with this for two thousand years \u2014 you\u2019re in good company.",
+        "The classical view is worth hearing on its own terms: hell isn\u2019t described as torture imposed on the unwilling, but as separation chosen by the unwilling. If love must be freely given, then God must allow people to finally say no to Him \u2014 and hell is what that \u201Cno\u201D looks like when it\u2019s honored. Love that can\u2019t be refused isn\u2019t love.",
+        "At the same time, the honest picture is bigger than one doctrine. Scripture also says God desires that none should perish but that all should come to repentance (2 Peter 3:9). His posture toward you isn\u2019t a trap being set \u2014 it\u2019s an invitation being extended, over and over.",
+        "What\u2019s not up for debate in any of the views: the door is open now, and it\u2019s open wide. This question matters most when it moves from abstract theology to a personal one \u2014 what do I actually want with God?"
+      ],
+      closing: "You don\u2019t have to settle two thousand years of debate tonight. You just have to know the door is open."
+    },
+    {
+      label: "Why is God silent when I pray?",
+      crisis: true,
+      body: [
+        "If you\u2019ve whispered \u201Chow long, O Lord?\u201D into the dark, you\u2019re praying the Psalms. Nearly a third of the Psalms are laments \u2014 raw, unfiltered cries from people who felt exactly what you feel. Silence in prayer isn\u2019t a modern failure; it\u2019s an ancient, sacred ache.",
+        "Here\u2019s something that helped others: silence isn\u2019t absence. A teacher is never more present than during the test \u2014 quiet, watching, close. Some seasons of faith are about learning God\u2019s voice; others are about learning His nearness without the voice.",
+        "There are practical truths too. Sometimes we can\u2019t hear because of the noise \u2014 hurry, distraction, exhaustion. Sometimes the answer is forming in a way we\u2019ll only recognize looking back. And sometimes God is doing the deeper work: teaching us to trust His character when we can\u2019t trace His hand.",
+        "Lament is prayer. The crying out, the frustration, the \u201Care you there?\u201D \u2014 all of it counts. Keep showing up. The silence has broken before, for people just as tired as you, and it can break again."
+      ],
+      closing: "You don\u2019t have to feel Him to be held by Him. Keep talking \u2014 He\u2019s closer than the quiet feels."
+    },
+    {
+      label: "I\u2019ve prayed and nothing changed \u2014 now what?",
+      crisis: true,
+      body: [
+        "This one hurts in a specific way, because you did what you were told to do. You asked, you believed, you waited \u2014 and the diagnosis stayed, the door stayed shut, the person didn\u2019t come back. It\u2019s okay to say that feels like betrayal.",
+        "Honesty first: \u201Cno\u201D and \u201Cnot yet\u201D are answers too, even when they don\u2019t feel like it. You see your life from one vantage point \u2014 this moment, this need, this pain. God sees the whole map: the timing, the people, the version of you this is forming. His wisdom isn\u2019t your lack of faith; it\u2019s His larger view.",
+        "That doesn\u2019t make it easy. Mystery is real, and anyone who pretends every unanswered prayer has a tidy explanation is guessing. Some of the most faithful people in Scripture died waiting \u2014 and Scripture calls them heroes, not failures.",
+        "So now what? Jesus told a story about exactly this \u2014 a friend knocking at midnight, refusing to stop (Luke 11). The point wasn\u2019t that persistence manipulates God. It\u2019s that the relationship survives the asking. Keep knocking. The door-knocking itself is faith."
+      ],
+      closing: "Unanswered doesn\u2019t mean unheard. The bravest prayer is the one you pray again."
+    }
+  ];
+
+  /* ---------- screen helper ---------- */
+  function show(id){
+    var screens = document.querySelectorAll(".screen");
+    for (var i = 0; i < screens.length; i++) screens[i].classList.remove("active");
+    $(id).classList.add("active");
+    window.scrollTo(0, 0);
+  }
+
+  /* ---------- render chips ---------- */
+  var chipsEl = $("chips");
+  QUESTIONS.forEach(function(q, i){
+    var b = document.createElement("button");
+    b.className = "chip";
+    b.type = "button";
+    b.innerHTML = q.label + ' <span class="arrow">&rarr;</span>';
+    b.addEventListener("click", function(){ openQuestion(i); });
+    chipsEl.appendChild(b);
+  });
+
+  /* ---------- answer screen ---------- */
+  function openQuestion(i){
+    var q = QUESTIONS[i];
+    $("q-title").textContent = q.label;
+    var body = $("q-body");
+    body.innerHTML = "";
+    q.body.forEach(function(par){
+      var p = document.createElement("p");
+      p.textContent = par;
+      body.appendChild(p);
+    });
+    $("q-closing").textContent = q.closing;
+    $("q-crisis").hidden = !q.crisis;
+    resetStillness();
+    show("screen-answer");
+  }
+
+  $("ask-another").addEventListener("click", function(){
+    resetStillness();
+    show("screen-room");
+  });
+  $("back-room").addEventListener("click", function(){
+    resetStillness();
+    show("screen-room");
+  });
+
+  /* ---------- stillness timer : a real 30-second quiet beat ---------- */
+  var stillTimer = null;
+  var stillRemaining = 30;
+
+  function resetStillness(){
+    if (stillTimer){ clearInterval(stillTimer); stillTimer = null; }
+    stillRemaining = 30;
+    $("stillness").classList.remove("breathing");
+    $("breath-ring").textContent = "\u221E";
+    $("still-text").className = "";
+    $("still-text").innerHTML = "Want to sit with this for a moment?<br>Thirty seconds. No noise. Just breathe.";
+    $("still-btn").hidden = false;
+    $("still-btn").disabled = false;
+    $("still-cancel").hidden = true;
+  }
+
+  $("still-btn").addEventListener("click", function(){
+    stillRemaining = 30;
+    $("stillness").classList.add("breathing");
+    $("still-btn").hidden = true;
+    $("still-cancel").hidden = false;
+    tick();
+    stillTimer = setInterval(tick, 1000);
+  });
+
+  function tick(){
+    if (stillRemaining <= 0){
+      clearInterval(stillTimer);
+      stillTimer = null;
+      $("stillness").classList.remove("breathing");
+      $("breath-ring").textContent = "\u2713";
+      $("still-text").className = "done";
+      $("still-text").textContent = "Thank you for sitting with this.";
+      $("still-cancel").hidden = true;
+      return;
+    }
+    $("breath-ring").textContent = stillRemaining;
+    $("still-text").innerHTML = "Breathe in&hellip; breathe out.<br>" + stillRemaining + " seconds of quiet.";
+    stillRemaining--;
+  }
+
+  $("still-cancel").addEventListener("click", function(){
+    resetStillness();
+    $("still-text").className = "done";
+    $("still-text").textContent = "Even a few seconds of stillness counts.";
+  });
+})();
+</script>
+</body>
+</html>

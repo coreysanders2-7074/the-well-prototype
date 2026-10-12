@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#1B1A1A">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Noto+Serif:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<title>The Well — Greater Detroit Community Resource Hub</title>
+<style>
+  :root{
+    --ink:#1B1A1A;
+    --ink2:#262524;
+    --accent:#FD5200;
+    --accent-soft:#ff6a1f;
+    --paper:#F5F2EB;
+    --muted:#CFC8C8;
+    --card:rgba(255,255,255,.045);
+    --line:rgba(253,82,0,.28);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:'Montserrat',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    background:radial-gradient(120% 90% at 50% 0%, #2b2826 0%, var(--ink) 55%, #0e0d0c 100%);
+    color:var(--paper);
+    min-height:100dvh;
+    display:flex;justify-content:center;
+    -webkit-font-smoothing:antialiased;
+  }
+  .app{
+    width:100%;max-width:430px;min-height:100dvh;
+    display:flex;flex-direction:column;
+    padding:28px 24px calc(20px + env(safe-area-inset-bottom));
+    position:relative;
+  }
+  .screen{display:none;flex-direction:column;flex:1;animation:rise .5s ease both}
+  .screen.active{display:flex}
+  @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+  /* ---------- shared ---------- */
+  .ripple-wrap{position:relative;height:120px;margin:6px 0 2px;display:flex;align-items:center;justify-content:center}
+  .ripple{position:absolute;border:1px solid var(--line);border-radius:50%;animation:ripple 4.5s ease-out infinite}
+  .ripple.r1{width:52px;height:52px}
+  .ripple.r2{width:52px;height:52px;animation-delay:1.5s}
+  .ripple.r3{width:52px;height:52px;animation-delay:3s}
+  @keyframes ripple{0%{transform:scale(.4);opacity:.9}100%{transform:scale(2.6);opacity:0}}
+  .well-dot{
+    width:52px;height:52px;border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, #4a2410 0%, #241109 60%, #120a06 100%);
+    border:1px solid var(--line);
+    box-shadow:0 0 42px rgba(253,82,0,.22), inset 0 0 18px rgba(0,0,0,.6);
+  }
+  h1{
+    text-align:center;font-weight:700;letter-spacing:.3em;text-indent:.3em;
+    font-size:17px;color:var(--accent-soft);margin-bottom:10px;line-height:1.7;
+  }
+  .tagline{text-align:center;color:var(--muted);font-size:13.5px;letter-spacing:.04em;margin-bottom:26px;line-height:1.7}
+  .tagline b{color:var(--accent-soft);font-weight:600}
+  .kicker{
+    text-align:center;color:var(--accent);font-size:12px;font-weight:700;
+    letter-spacing:.32em;text-indent:.32em;margin:8px 0 12px;
+  }
+  .ask{
+    font-family:'Noto Serif',Georgia,"Times New Roman",serif;font-size:22px;line-height:1.45;
+    text-align:center;margin-bottom:8px;color:var(--paper);
+  }
+  .subask{
+    font-family:'Noto Serif',Georgia,"Times New Roman",serif;
+    text-align:center;color:var(--muted);font-size:14px;line-height:1.65;
+    margin-bottom:22px;padding:0 6px;
+  }
+  button{
+    font:inherit;cursor:pointer;border:none;border-radius:14px;
+    padding:16px;font-size:16.5px;font-weight:700;letter-spacing:.02em;
+    transition:transform .12s, filter .2s;
+  }
+  button:active{transform:scale(.985)}
+  .primary{
+    background:var(--accent);
+    color:#fff;margin-top:8px;
+    box-shadow:0 8px 28px rgba(253,82,0,.28);
+  }
+  .primary:hover{filter:brightness(1.06)}
+  .ghost{
+    background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,.14);
+    margin-top:12px;font-weight:600;font-size:15px;
+  }
+
+  /* ---------- intake chips ---------- */
+  .chips{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:6px}
+  .chip{
+    background:var(--card);border:1px solid rgba(255,255,255,.12);border-radius:14px;
+    padding:14px 10px;font-size:14px;font-weight:600;color:var(--paper);
+    display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;
+    line-height:1.35;min-height:92px;justify-content:center;
+  }
+  .chip .ico{font-size:22px}
+  .chip:hover{border-color:var(--accent)}
+  .chip.crisis{background:rgba(192,86,79,.08);border-color:rgba(192,86,79,.35)}
+
+  /* ---------- match results ---------- */
+  .fitline{
+    font-family:'Noto Serif',Georgia,"Times New Roman",serif;
+    text-align:center;color:var(--muted);font-size:14px;line-height:1.65;
+    margin-bottom:20px;padding:0 4px;
+  }
+  .fitline b{color:var(--accent-soft);font-weight:600}
+  .res-card{
+    background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:20px 18px;margin-bottom:16px;position:relative;overflow:hidden;
+  }
+  .rankrow{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+  .rank{
+    width:34px;height:34px;border-radius:50%;flex:none;
+    display:flex;align-items:center;justify-content:center;
+    font-weight:800;font-size:16px;color:#fff;
+    background:var(--accent);
+  }
+  .rank.dim{background:transparent;color:var(--accent);border:1px solid var(--line)}
+  .callfirst{
+    font-size:11px;font-weight:800;letter-spacing:.18em;color:#fff;
+    background:rgba(192,86,79,.55);border:1px solid #c0564f;
+    padding:5px 10px;border-radius:999px;
+  }
+  .res-name{font-size:19px;font-weight:700;line-height:1.4;margin-bottom:6px;color:var(--paper)}
+  .res-desc{
+    font-family:'Noto Serif',Georgia,"Times New Roman",serif;
+    color:var(--muted);font-size:14.5px;line-height:1.6;margin-bottom:12px}
+  .res-fits{
+    font-family:'Noto Serif',Georgia,"Times New Roman",serif;
+    font-size:14px;line-height:1.6;color:#e8e4d8;
+    background:rgba(253,82,0,.08);border-left:3px solid var(--accent);
+    border-radius:0 10px 10px 0;padding:10px 14px;margin-bottom:12px;
+  }
+  .res-meta{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+  .pill{
+    font-size:12px;font-weight:700;letter-spacing:.06em;
+    border:1px solid rgba(255,255,255,.16);color:var(--muted);
+    padding:5px 10px;border-radius:999px;
+  }
+  .pill.free{color:#9fd6a4;border-color:rgba(159,214,164,.45)}
+  .pill.lowcost{color:var(--accent-soft);border-color:var(--line)}
+  .callbtn{
+    display:block;text-align:center;text-decoration:none;
+    background:var(--accent);
+    color:#fff;font-weight:800;font-size:17px;
+    border-radius:14px;padding:15px;margin-bottom:10px;
+    box-shadow:0 8px 28px rgba(253,82,0,.28);
+  }
+  .callbtn:active{transform:scale(.985)}
+  .res-detail{color:var(--muted);font-size:13px;line-height:1.7}
+  .res-detail b{color:var(--accent-soft);font-weight:600}
+  .trust{
+    font-family:'Noto Serif',Georgia,"Times New Roman",serif;
+    margin-top:10px;font-size:13px;line-height:1.65;color:#7d86a0;font-style:italic;
+    border-top:1px dashed rgba(255,255,255,.12);padding-top:10px;
+  }
+  .trust b{color:var(--accent);font-weight:700;font-style:normal}
+  .crisis-box{
+    font-family:'Noto Serif',Georgia,"Times New Roman",serif;
+    border:1px solid #c0564f;background:rgba(192,86,79,.1);border-radius:12px;
+    padding:14px 16px;margin-bottom:14px;font-size:14px;line-height:1.6;color:#f0d9d6;
+  }
+  .crisis-box b{color:#fff}
+
+  /* ---------- browse list ---------- */
+  .catbtn{
+    background:var(--card);border:1px solid rgba(255,255,255,.12);border-radius:14px;
+    padding:16px;font-size:15px;font-weight:600;color:var(--paper);
+    display:flex;align-items:center;gap:12px;text-align:left;margin-bottom:10px;
+  }
+  .catbtn .ico{font-size:22px}
+  .catbtn .cnt{margin-left:auto;color:var(--accent);font-size:13px;font-weight:700;white-space:nowrap}
+
+  footer{
+    margin-top:auto;padding-top:26px;text-align:center;
+    color:#4d5670;font-size:11.5px;letter-spacing:.06em;line-height:1.7;
+  }
+  .missing{
+    text-align:center;color:var(--muted);font-size:13px;line-height:1.7;
+    margin-top:20px;padding:14px;border:1px dashed rgba(255,255,255,.14);border-radius:12px;
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- SCREEN 1 : intake -->
+  <section id="screen-intake" class="screen active">
+    <div class="ripple-wrap">
+      <div class="ripple r1"></div><div class="ripple r2"></div><div class="ripple r3"></div>
+      <div class="well-dot"></div>
+    </div>
+    <h1>GREATER DETROIT<br>COMMUNITY RESOURCE HUB</h1>
+    <p class="tagline">Real help in Metro Detroit. <b>No signup. No judgment. No names.</b></p>
+    <p class="ask">What&rsquo;s happening<br>right now?</p>
+    <p class="subask">We&rsquo;ll help you figure this out. Tap what fits &mdash; we&rsquo;ll match you with the <b style="color:var(--accent-soft)">3 best options</b>, ranked so you know who to call first.</p>
+    <div class="chips" id="chips"></div>
+    <button class="ghost" id="browseAll">Prefer to browse? See everything by category</button>
+  </section>
+
+  <!-- SCREEN 2 : top-3 match -->
+  <section id="screen-match" class="screen">
+    <p class="kicker">YOUR TOP 3</p>
+    <p class="fitline" id="matchIntro"></p>
+    <div id="matchList"></div>
+    <button class="primary" id="diffSituation">Pick a different situation</button>
+    <button class="ghost" id="browseFromMatch">Browse all by category</button>
+  </section>
+
+  <!-- SCREEN 3 : browse categories -->
+  <section id="screen-browse" class="screen">
+    <p class="kicker">BROWSE EVERYTHING</p>
+    <p class="fitline">Every category, every verified resource.<br><b>Free</b> first &mdash; always.</p>
+    <div id="catList"></div>
+    <button class="ghost" id="backToIntake">Back to the start</button>
+  </section>
+
+  <!-- SCREEN 4 : one category's listings -->
+  <section id="screen-category" class="screen">
+    <p class="kicker" id="catKicker">CATEGORY</p>
+    <p class="fitline" id="catIntro"></p>
+    <div id="catCards"></div>
+    <button class="primary" id="backToBrowse">Back to all categories</button>
+    <button class="ghost" id="backToIntake2">Start over</button>
+  </section>
+
+  <div class="missing">Know a resource we&rsquo;re missing? Tell us.</div>
+  <footer>A Twlv2 Well experiment &middot; prototype<br>Everything runs on this page &mdash; nothing is sent or stored anywhere.</footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var $ = function(id){ return document.getElementById(id); };
+
+  /* =====================================================================
+   * LISTINGS DATA
+   * ---------------------------------------------------------------------
+   * Listings verified via web search on 2026-10-11 — re-verify against
+   * official sites before any public launch.
+   * Verified against: 988lifeline.org, mi211.org, commongroundhelps.org,
+   * thehotline.org, haven-oakland.org, firststep-mi.org, dwihn.org,
+   * drmm.org, cotsdetroit.org, camdetroit.org, gcfb.org,
+   * forgottenharvest.org, thawfund.org, waynemetro.org, svdpdetroit.org
+   * (via Michigan.gov MEAP listing), unitedwaysem.org, dteenergy.com,
+   * covenantcommunitycare.org, detroitmi.gov, ladadetroit.org,
+   * michiganlegalhelp.org, centralusa.salvationarmy.org (via Michigan.gov).
+   * Hours marked "Call to confirm hours" unless verified on the org's
+   * own site during this pass. All crisis lines verified 24/7.
+   * ===================================================================== */
+  var RES = {
+    r988: { name:"988 Suicide & Crisis Lifeline",
+      desc:"Trained counselors for suicide, mental health, or substance-use crisis — call or text.",
+      phone:"988", tel:"tel:988", area:"Nationwide, incl. Metro Detroit",
+      hours:"24/7 — every day", cost:"Free",
+      trust:"Federally funded national lifeline — verified at 988lifeline.org.",
+      crisis:"If you are thinking about harming yourself, call or text 988 right now. Someone trained and kind is there 24/7." },
+    r211: { name:"Michigan 2-1-1",
+      desc:"One call connects you to thousands of local programs — food, bills, shelter, health, more.",
+      phone:"2-1-1", tel:"tel:211", area:"Statewide Michigan",
+      hours:"24/7 — every day", cost:"Free",
+      trust:"Operated by United Way — verified at mi211.org." },
+    rcommonground: { name:"Common Ground",
+      desc:"Oakland County's 24/7 crisis line — crisis, mental health, or just overwhelmed.",
+      phone:"(800) 231-1127", tel:"tel:+18002311127", area:"Oakland County",
+      hours:"24/7 — every day", cost:"Free",
+      trust:"County-designated crisis center — verified at commongroundhelps.org.",
+      crisis:"If you are in immediate danger, call 911. For crisis support right now, call (800) 231-1127 — someone answers 24/7." },
+    rdv: { name:"National Domestic Violence Hotline",
+      desc:"24/7 support, safety planning, and local referrals for anyone affected by domestic violence or abuse.",
+      phone:"1-800-799-7233", tel:"tel:+18007997233", area:"Nationwide",
+      hours:"24/7 — every day", cost:"Free",
+      trust:"Federally funded, operating for decades — verified at thehotline.org.",
+      crisis:"If you are in immediate danger, call 911. The Hotline is free, confidential, and open 24/7." },
+    rhaven: { name:"HAVEN",
+      desc:"Oakland County's comprehensive program for DV & sexual assault survivors — shelter, counseling, legal advocacy.",
+      phone:"(877) 922-1274", tel:"tel:+18779221274", area:"Oakland County",
+      hours:"24/7 — every day", cost:"Free",
+      trust:"Serving Oakland County for 50+ years — verified at haven-oakland.org." },
+    rfirststep: { name:"First Step",
+      desc:"Wayne County's domestic violence & sexual assault agency — 24-hr helpline, shelter, counseling.",
+      phone:"(734) 722-6800", tel:"tel:+17347226800", area:"Wayne County",
+      hours:"24/7 — every day", cost:"Free",
+      trust:"Wayne County's designated DV/SA agency — verified at firststep-mi.org." },
+    rdwihn: { name:"DWIHN Crisis Helpline",
+      desc:"Detroit Wayne Integrated Health Network — 24/7 mental health and substance-use crisis help.",
+      phone:"(800) 241-4949", tel:"tel:+18002414949", area:"Wayne County",
+      hours:"24/7 — every day", cost:"Free",
+      trust:"Wayne County's public behavioral health authority — verified at dwihn.org." },
+    rdrmm: { name:"Detroit Rescue Mission Ministries",
+      desc:"Emergency shelter, meals, addiction recovery, and veterans services — serving Detroit since 1909.",
+      phone:"(313) 993-6703", tel:"tel:+13139936703", area:"Detroit",
+      hours:"Call to confirm hours", cost:"Free",
+      trust:"Century-old Detroit nonprofit — verified at drmm.org." },
+    rcots: { name:"COTS Detroit",
+      desc:"Family emergency shelter and transitional housing — 24/7 intake for families with children.",
+      phone:"(313) 831-3777", tel:"tel:+13138313777", area:"Detroit / Wayne County",
+      hours:"Call to confirm hours", cost:"Free",
+      trust:"Serving Detroit families for 40+ years — verified at cotsdetroit.org." },
+    rcam: { name:"CAM — Coordinated Assessment Model",
+      desc:"Detroit's single front door for homelessness services — intake and shelter placement.",
+      phone:"(313) 305-0311", tel:"tel:+13133050311", area:"Detroit",
+      hours:"Mon–Fri 8am–6pm", cost:"Free",
+      trust:"Citywide intake run with Detroit's Continuum of Care — verified at camdetroit.org." },
+    rgleaners: { name:"Gleaners Community Food Bank",
+      desc:"Southeast Michigan's major food bank — finds you a pantry or meal near you.",
+      phone:"(866) 453-2637", tel:"tel:+18664532637", area:"Southeast Michigan",
+      hours:"Mon–Fri 8am–4pm", cost:"Free",
+      trust:"Feeding America member since 1977 — verified at gcfb.org." },
+    rforgotten: { name:"Forgotten Harvest",
+      desc:"Fresh food rescue — mobile pantries delivering free groceries across Metro Detroit.",
+      phone:"(248) 967-1500", tel:"tel:+12489671500", area:"Metro Detroit",
+      hours:"Call to confirm hours", cost:"Free",
+      trust:"Rescuing fresh food for 30+ years — verified at forgottenharvest.org." },
+    rthaw: { name:"THAW — The Heat and Warmth Fund",
+      desc:"Emergency utility assistance for Michigan households facing an energy crisis.",
+      phone:"1-800-866-8429", tel:"tel:+18008668429", area:"Michigan",
+      hours:"Call to confirm hours", cost:"Free",
+      trust:"Michigan nonprofit since 1985 — verified at thawfund.org." },
+    rwaynemetro: { name:"Wayne Metro Community Action Agency",
+      desc:"Wayne County's community action agency — screens you for rent, utility, and emergency aid programs.",
+      phone:"(313) 388-9799", tel:"tel:+13133889799", area:"Wayne County",
+      hours:"Mon–Fri 8:30am–5pm", cost:"Free",
+      trust:"Official county community action agency — verified at waynemetro.org." },
+    rsvdp: { name:"Society of St. Vincent de Paul — Detroit",
+      desc:"One-time help with rent, utilities, and essentials through local parish teams.",
+      phone:"1-877-788-4623", tel:"tel:+18777884623", area:"Metro Detroit",
+      hours:"Call to confirm hours", cost:"Free",
+      trust:"Archdiocese of Detroit nonprofit — listed by Michigan.gov energy assistance." },
+    ruwsem: { name:"United Way for Southeastern Michigan",
+      desc:"Utility assistance referrals and wraparound support across the tri-county area.",
+      phone:"1-844-211-4994", tel:"tel:+18442114994", area:"Wayne, Oakland, Macomb",
+      hours:"Call to confirm hours", cost:"Free",
+      trust:"Regional United Way — verified at unitedwaysem.org." },
+    rsalvationarmy: { name:"Salvation Army — Great Lakes",
+      desc:"Emergency financial assistance, including energy bills, for Michigan households.",
+      phone:"1-855-929-1640", tel:"tel:+18559291640", area:"Michigan",
+      hours:"Call to confirm hours", cost:"Free",
+      trust:"Listed on Michigan.gov's energy assistance page." },
+    rdte: { name:"DTE Low Income Self-Sufficiency Plan",
+      desc:"DTE's official aid program — shutoff protection plus up to $3,000 in past-due balance forgiveness.",
+      phone:"(800) 477-4747", tel:"tel:+18004774747", area:"Southeast Michigan (DTE customers)",
+      hours:"Call to confirm hours", cost:"Free",
+      trust:"DTE's official assistance program — verified at dteenergy.com." },
+    rcovenant: { name:"Covenant Community Care",
+      desc:"Medical, dental, and behavioral health — regardless of your ability to pay.",
+      phone:"(313) 554-1095", tel:"tel:+13135541095", area:"Detroit",
+      hours:"Mon–Tue 8am–8pm; Wed–Fri 8am–5pm", cost:"Low-cost",
+      trust:"Federally qualified health center — verified at covenantcommunitycare.org." },
+    rdhd: { name:"Detroit Health Department",
+      desc:"Free public health services — immunizations, STI/HIV testing, WIC, lead screening.",
+      phone:"(313) 876-4000", tel:"tel:+13138764000", area:"City of Detroit",
+      hours:"Mon–Fri 8:30am–4pm", cost:"Free",
+      trust:"Official City of Detroit department — verified at detroitmi.gov." },
+    rlad: { name:"Legal Aid and Defender Association",
+      desc:"Free civil legal help for low-income residents — housing, family, consumer, and more.",
+      phone:"(877) 964-4700", tel:"tel:+18779644700", area:"Metro Detroit",
+      hours:"Call to confirm hours", cost:"Free",
+      trust:"Metro Detroit's largest legal aid provider — verified at ladadetroit.org." },
+    rcall: { name:"Michigan Legal Help — Counsel & Advocacy Law Line",
+      desc:"Free legal advice over the phone for seniors and low-income Michiganders.",
+      phone:"(888) 783-8190", tel:"tel:+18887838190", area:"Michigan",
+      hours:"Mon–Tue & Thu 9am–5pm; Wed 9am–6pm; Fri 9am–1pm", cost:"Free",
+      trust:"A Lakeshore Legal Aid program — verified at michiganlegalhelp.org." }
+  };
+
+  /* Top-3 ranked matches per category. Crisis categories always lead
+     with 988 / the relevant 24/7 hotline. */
+  var CATS = [
+    { key:"emergency", label:"Emergency", ico:"🚨", crisis:true,
+      intro:"You're in crisis — <b>call #1 right now.</b> A real person will pick up.",
+      matches:[
+        { id:"r988", fit:"You said it's an emergency — talk to a trained counselor first, right now. Free, confidential, 24/7." },
+        { id:"rcommonground", fit:"A local crisis team here in Oakland County — also 24/7, a second immediate option." },
+        { id:"r211", fit:"If it isn't a mental-health emergency, 2-1-1 finds the closest open help of any kind." } ] },
+    { key:"shelter", label:"Shelter", ico:"🏠",
+      intro:"Nowhere safe to sleep tonight. <b>Call #1 first</b> — they'll place you.",
+      matches:[
+        { id:"rcam", fit:"Detroit's one front door for shelter — start here so you get placed right." },
+        { id:"rcots", fit:"If you have kids with you, COTS is built for families, with 24/7 intake." },
+        { id:"rdrmm", fit:"Emergency shelter with meals, plus longer-term recovery and veterans programs." } ] },
+    { key:"food", label:"Food", ico:"🍞",
+      intro:"Nobody should go hungry. <b>Call #1 first</b> — they'll find you the closest pantry.",
+      matches:[
+        { id:"rgleaners", fit:"The biggest food network in Southeast Michigan — they'll find the closest pantry or meal to you." },
+        { id:"rforgotten", fit:"Fresh produce and groceries through mobile pantries across Metro Detroit." },
+        { id:"r211", fit:"If you can't reach either, 2-1-1 will find the nearest open pantry today." } ] },
+    { key:"abuse", label:"Abuse", ico:"🛟", crisis:true,
+      intro:"You don't deserve this, and you don't have to figure it out alone. <b>Call #1 first.</b>",
+      matches:[
+        { id:"rdv", fit:"A trained advocate 24/7 — start here if you're not sure what to do next." },
+        { id:"rfirststep", fit:"Wayne County's own agency — helpline, shelter, counseling, and court advocacy." },
+        { id:"rhaven", fit:"If you're in Oakland County, HAVEN is the local comprehensive program." } ] },
+    { key:"bills", label:"Bills", ico:"🧾",
+      intro:"Falling behind on bills. <b>Call #1 first</b> — the sooner you call, the more options you have.",
+      matches:[
+        { id:"rthaw", fit:"Money paid directly toward your utility bill — the fastest path for energy." },
+        { id:"rwaynemetro", fit:"Screens you for every program you qualify for — rent, utilities, and more." },
+        { id:"rsvdp", fit:"One-time emergency help when you've run out of other options." } ] },
+    { key:"shutoff", label:"Shut-off Notice", ico:"🔌",
+      intro:"A shut-off notice is scary — <b>call #1 first</b>. Protection exists, but you have to ask.",
+      matches:[
+        { id:"rdte", fit:"Call DTE first — their plan gives shutoff protection plus up to $3,000 in past-due forgiveness." },
+        { id:"rthaw", fit:"Emergency utility money to pair with a payment plan while you sort things out." },
+        { id:"ruwsem", fit:"Referrals to every energy program in Wayne, Oakland, and Macomb counties." } ] },
+    { key:"funds", label:"Emergency Funds", ico:"💵",
+      intro:"Need one-time financial help, fast. <b>Call #1 first</b> — they'll screen you for everything.",
+      matches:[
+        { id:"rwaynemetro", fit:"The county's official intake for emergency financial aid — one call, many programs." },
+        { id:"rsvdp", fit:"Small, fast one-time help through local parish teams." },
+        { id:"rsalvationarmy", fit:"Another emergency assistance option, including energy bills, across Michigan." } ] },
+    { key:"medical", label:"Medical", ico:"🏥",
+      intro:"You need a doctor you can actually afford. <b>Call #1 first</b>.",
+      matches:[
+        { id:"rcovenant", fit:"See a real doctor even without insurance — sliding scale, typically $20–50 a visit." },
+        { id:"rdhd", fit:"Free public health services: shots, testing, screenings, and WIC." },
+        { id:"r211", fit:"If you need a specialist, 2-1-1 finds free or low-cost clinics near you." } ] },
+    { key:"mental", label:"Mental Health", ico:"🧠", crisis:true,
+      intro:"Struggling is enough of a reason. <b>Call #1 first</b> — someone kind will answer.",
+      matches:[
+        { id:"r988", fit:"Trained counselors 24/7 by call or text — start here, it's free and confidential." },
+        { id:"rcommonground", fit:"A local crisis team in Oakland County — also 24/7." },
+        { id:"rdwihn", fit:"Wayne County's crisis and counseling access line." } ] },
+    { key:"legal", label:"Legal", ico:"⚖️",
+      intro:"A legal problem you can't afford a lawyer for. <b>Call #1 first</b> — it's free.",
+      matches:[
+        { id:"rlad", fit:"Free lawyers for low-income residents — housing, family, consumer cases, and more." },
+        { id:"rcall", fit:"Free legal advice by phone before you commit to anything." },
+        { id:"r211", fit:"For lawyer referrals matched to your exact situation, 2-1-1 can point you right." } ] }
+  ];
+
+  function esc(s){
+    return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;")
+      .replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+  }
+  function costPill(cost){
+    return cost === "Free"
+      ? '<span class="pill free">FREE</span>'
+      : '<span class="pill lowcost">LOW-COST</span>';
+  }
+  function cardHTML(r, rank, fit, crisisFirst){
+    var h = "";
+    h += '<div class="res-card">';
+    if (rank){
+      h += '<div class="rankrow">';
+      h += '<div class="rank' + (rank > 1 ? " dim" : "") + '">' + rank + '</div>';
+      if (crisisFirst && rank === 1) h += '<span class="callfirst">CALL FIRST</span>';
+      h += '</div>';
+    }
+    h += '<p class="res-name">' + esc(r.name) + '</p>';
+    h += '<p class="res-desc">' + esc(r.desc) + '</p>';
+    if (fit) h += '<p class="res-fits">' + esc(fit) + '</p>';
+    if (crisisFirst && rank === 1 && r.crisis)
+      h += '<div class="crisis-box"><b>Right now:</b> ' + esc(r.crisis) + '</div>';
+    h += '<div class="res-meta">' + costPill(r.cost);
+    h += '<span class="pill">' + esc(r.area) + '</span></div>';
+    h += '<a class="callbtn" href="' + r.tel + '">Call ' + esc(r.phone) + '</a>';
+    h += '<p class="res-detail"><b>Hours:</b> ' + esc(r.hours) + '</p>';
+    h += '<p class="trust"><b>Why we trust this:</b> ' + esc(r.trust) + '</p>';
+    h += '</div>';
+    return h;
+  }
+  function show(id){
+    var screens = document.querySelectorAll(".screen");
+    for (var i = 0; i < screens.length; i++) screens[i].classList.remove("active");
+    $(id).classList.add("active");
+    window.scrollTo(0, 0);
+  }
+
+  /* ---------- intake chips ---------- */
+  (function buildChips(){
+    var h = "";
+    for (var i = 0; i < CATS.length; i++){
+      var c = CATS[i];
+      h += '<button class="chip' + (c.crisis ? " crisis" : "") + '" data-cat="' + c.key + '">'
+         + '<span class="ico">' + c.ico + '</span><span>' + esc(c.label) + '</span></button>';
+    }
+    $("chips").innerHTML = h;
+    var chips = $("chips").querySelectorAll(".chip");
+    for (var j = 0; j < chips.length; j++){
+      chips[j].addEventListener("click", function(){
+        showMatch(this.getAttribute("data-cat"));
+      });
+    }
+  })();
+
+  function findCat(key){
+    for (var i = 0; i < CATS.length; i++) if (CATS[i].key === key) return CATS[i];
+    return null;
+  }
+
+  /* ---------- top-3 match screen ---------- */
+  function showMatch(key){
+    var c = findCat(key);
+    if (!c) return;
+    $("matchIntro").innerHTML = c.intro;
+    var h = "";
+    for (var i = 0; i < c.matches.length; i++){
+      var m = c.matches[i];
+      var r = RES[m.id];
+      if (r) h += cardHTML(r, i + 1, m.fit, c.crisis);
+    }
+    $("matchList").innerHTML = h;
+    show("screen-match");
+  }
+
+  /* ---------- browse-all screens ---------- */
+  function browseIds(){
+    var seen = {}, ids = [];
+    for (var i = 0; i < CATS.length; i++){
+      var ms = CATS[i].matches;
+      for (var j = 0; j < ms.length; j++){
+        if (!seen[ms[j].id]){ seen[ms[j].id] = true; ids.push(ms[j].id); }
+      }
+    }
+    return ids;
+  }
+  (function buildBrowse(){
+    var ids = browseIds();
+    var perCat = {};
+    for (var i = 0; i < CATS.length; i++){
+      var ms = CATS[i].matches;
+      perCat[CATS[i].key] = ms.length;
+    }
+    var h = "";
+    for (var k = 0; k < CATS.length; k++){
+      var c = CATS[k];
+      h += '<button class="catbtn" data-cat="' + c.key + '">'
+         + '<span class="ico">' + c.ico + '</span><span>' + esc(c.label) + '</span>'
+         + '<span class="cnt">' + perCat[c.key] + ' resources</span></button>';
+    }
+    $("catList").innerHTML = h;
+    var btns = $("catList").querySelectorAll(".catbtn");
+    for (var b = 0; b < btns.length; b++){
+      btns[b].addEventListener("click", function(){
+        showCategory(this.getAttribute("data-cat"));
+      });
+    }
+  })();
+
+  function showCategory(key){
+    var c = findCat(key);
+    if (!c) return;
+    $("catKicker").textContent = c.ico + " " + c.label.toUpperCase();
+    $("catIntro").textContent = "Every verified " + c.label.toLowerCase() + " resource in the hub. Free first — always.";
+    var h = "";
+    for (var i = 0; i < c.matches.length; i++){
+      var r = RES[c.matches[i].id];
+      if (r) h += cardHTML(r, 0, null, false);
+    }
+    $("catCards").innerHTML = h;
+    show("screen-category");
+  }
+
+  $("browseAll").addEventListener("click", function(){ show("screen-browse"); });
+  $("browseFromMatch").addEventListener("click", function(){ show("screen-browse"); });
+  $("diffSituation").addEventListener("click", function(){ show("screen-intake"); });
+  $("backToIntake").addEventListener("click", function(){ show("screen-intake"); });
+  $("backToIntake2").addEventListener("click", function(){ show("screen-intake"); });
+  $("backToBrowse").addEventListener("click", function(){ show("screen-browse"); });
+})();
+</script>
+</body>
+</html>

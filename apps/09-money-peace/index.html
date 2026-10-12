@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#1B1A1A">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Noto+Serif:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<title>The Well — Money Peace</title>
+<style>
+    :root{
+    --ink:#1B1A1A;
+    --ink2:#262524;
+    --accent:#FD5200;
+    --accent-soft:#ff6a1f;
+    --paper:#F5F2EB;
+    --muted:#CFC8C8;
+    --card:rgba(255,255,255,.045);
+    --line:rgba(253,82,0,.28);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:'Montserrat',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    background:radial-gradient(120% 90% at 50% 0%, #2b2826 0%, var(--ink) 55%, #0e0d0c 100%);
+    color:var(--paper);
+    min-height:100dvh;
+    display:flex;justify-content:center;
+    -webkit-font-smoothing:antialiased;
+  }
+  .app{
+    width:100%;max-width:430px;min-height:100dvh;
+    display:flex;flex-direction:column;
+    padding:28px 24px calc(20px + env(safe-area-inset-bottom));
+    position:relative;
+  }
+  .screen{display:none;flex-direction:column;flex:1;animation:rise .5s ease both}
+  .screen.active{display:flex}
+  @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+  /* ---------- landing ---------- */
+  .ripple-wrap{position:relative;height:150px;margin:6px 0 2px;display:flex;align-items:center;justify-content:center}
+  .ripple{position:absolute;border:1px solid var(--line);border-radius:50%;animation:ripple 4.5s ease-out infinite}
+  .ripple.r1{width:56px;height:56px}
+  .ripple.r2{width:56px;height:56px;animation-delay:1.5s}
+  .ripple.r3{width:56px;height:56px;animation-delay:3s}
+  @keyframes ripple{0%{transform:scale(.4);opacity:.9}100%{transform:scale(2.6);opacity:0}}
+  .well-dot{
+    width:56px;height:56px;border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, #4a2410 0%, #241109 60%, #120a06 100%);
+    border:1px solid var(--line);
+    box-shadow:0 0 42px rgba(253,82,0,.22), inset 0 0 18px rgba(0,0,0,.6);
+  }
+  h1{
+    text-align:center;font-weight:700;letter-spacing:.42em;text-indent:.42em;
+    font-size:21px;color:var(--accent-soft);margin-bottom:10px;
+  }
+  .tagline{text-align:center;color:var(--muted);font-size:13.5px;letter-spacing:.06em;margin-bottom:26px}
+  .ask{
+    font-family:'Noto Serif',Georgia,serif;font-size:22px;line-height:1.45;
+    text-align:center;margin-bottom:18px;color:var(--paper);
+  }
+  .chiplabel{
+    text-align:center;color:var(--accent-soft);font-size:13px;font-weight:700;
+    letter-spacing:.22em;text-indent:.22em;margin:6px 0 14px;
+  }
+  .chips{display:flex;flex-direction:column;gap:10px}
+  .chip{
+    display:flex;align-items:center;justify-content:space-between;
+    background:var(--card);border:1px solid rgba(255,255,255,.14);border-radius:14px;
+    color:var(--paper);padding:16px 18px;font-size:16.5px;font-weight:600;text-align:left;
+    transition:border-color .2s, background .2s;
+  }
+  .chip:hover{border-color:var(--accent)}
+  .chip .arrow{color:var(--accent);font-size:18px}
+  textarea{
+    width:100%;min-height:132px;resize:vertical;
+    background:var(--card);border:1px solid rgba(255,255,255,.12);border-radius:14px;
+    color:var(--paper);font-size:16px;line-height:1.55;padding:16px;
+    outline:none;transition:border .2s, box-shadow .2s;
+  }
+  textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(253,82,0,.15)}
+  textarea::placeholder{color:#8a8484}
+  textarea.oneline{min-height:64px;resize:none}
+  .fieldlabel{
+    color:var(--accent-soft);font-size:14px;font-weight:600;letter-spacing:.04em;
+    margin:4px 0 10px;text-align:center;
+  }
+  button{
+    font:inherit;cursor:pointer;border:none;border-radius:14px;
+    padding:16px;font-size:16.5px;font-weight:700;letter-spacing:.02em;
+    transition:transform .12s, filter .2s;
+  }
+  button:active{transform:scale(.985)}
+  .primary{
+    background:var(--accent);
+    color:#fff;margin-top:8px;
+    box-shadow:0 8px 28px rgba(253,82,0,.28);
+  }
+  .primary:hover{filter:brightness(1.06)}
+  .ghost{
+    background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,.14);
+    margin-top:12px;font-weight:600;font-size:15px;
+  }
+  .privacy{
+    text-align:center;color:var(--muted);font-size:12.5px;line-height:1.6;
+    margin-top:22px;padding:0 8px;
+  }
+  .privacy b{color:var(--accent-soft);font-weight:600}
+
+  /* ---------- response ---------- */
+  .kicker{
+    text-align:center;color:var(--accent);font-size:12px;font-weight:700;
+    letter-spacing:.32em;text-indent:.32em;margin:8px 0 12px;
+  }
+  .brought{
+    text-align:center;color:var(--muted);font-style:italic;
+    font-size:14.5px;line-height:1.6;margin-bottom:20px;padding:0 6px;
+  }
+  .brought span{color:var(--paper)}
+  .prayer{
+    font-family:'Noto Serif',Georgia,serif;
+    font-size:16px;line-height:1.75;color:#F5F2EB;
+    background:rgba(255,255,255,.03);border-left:3px solid var(--accent);
+    border-radius:0 12px 12px 0;padding:16px 18px;margin-bottom:26px;
+  }
+  .prayer .amen{color:var(--accent-soft);font-weight:700}
+  .step-card{
+    background:rgba(253,82,0,.08);border:1px solid var(--line);border-radius:16px;
+    padding:20px;margin-bottom:26px;
+  }
+  .step-card p{font-size:16.5px;line-height:1.65;color:var(--paper)}
+  .step-card p::before{content:"\2192  ";color:var(--accent);font-weight:700}
+  .verse-card{
+    background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:22px 20px;margin-bottom:26px;position:relative;overflow:hidden;
+  }
+  .verse-card::before{
+    content:"\201C";position:absolute;top:2px;left:14px;
+    font-family:'Noto Serif',Georgia,serif;font-size:64px;color:rgba(253,82,0,.16);line-height:1;
+  }
+  .verse{
+    font-family:'Noto Serif',Georgia,serif;font-size:18.5px;line-height:1.65;
+    margin-bottom:12px;position:relative;
+  }
+  .ref{text-align:right;color:var(--accent-soft);font-size:13.5px;letter-spacing:.08em;font-weight:600}
+  .closing{
+    font-family:'Noto Serif',Georgia,serif;font-size:24px;line-height:1.5;
+    text-align:center;color:var(--accent-soft);margin:10px 0 6px;
+  }
+  footer{
+    margin-top:auto;padding-top:26px;text-align:center;
+    color:#8a8484;font-size:11.5px;letter-spacing:.06em;line-height:1.7;
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- SCREEN 1 : pick what's keeping you up -->
+  <section id="screen-landing" class="screen active">
+    <div class="ripple-wrap">
+      <div class="ripple r1"></div><div class="ripple r2"></div><div class="ripple r3"></div>
+      <div class="well-dot"></div>
+    </div>
+    <h1>MONEY PEACE</h1>
+    <p class="tagline">One screen. No name. No signup.</p>
+    <p class="ask">Money keeps you up.<br>Let&rsquo;s talk about it &mdash;<br>no judgment here.</p>
+    <p class="chiplabel">WHAT&rsquo;S KEEPING YOU UP?</p>
+    <div class="chips">
+      <button class="chip" data-choice="debt">Debt <span class="arrow">&rarr;</span></button>
+      <button class="chip" data-choice="rent">Rent / housing <span class="arrow">&rarr;</span></button>
+      <button class="chip" data-choice="shame">Shame about money <span class="arrow">&rarr;</span></button>
+      <button class="chip" data-choice="job">Job / income <span class="arrow">&rarr;</span></button>
+      <button class="chip" data-choice="other">Something else <span class="arrow">&rarr;</span></button>
+    </div>
+    <p class="privacy"><b>Nothing you type leaves this page.</b><br>No account. No history. No one will ever know you were here.</p>
+  </section>
+
+  <!-- SCREEN 2 : one honest sentence (optional) -->
+  <section id="screen-sentence" class="screen" style="justify-content:center">
+    <p class="kicker">NO JUDGMENT HERE</p>
+    <p class="brought" id="echo-choice"></p>
+    <p class="fieldlabel">One honest sentence, if you want.</p>
+    <textarea id="sentence" class="oneline" placeholder="No names, no details &mdash; just the honest version&hellip;" aria-label="One honest sentence about money"></textarea>
+    <button class="primary" id="continue">Continue</button>
+    <button class="ghost" id="back-chips">&larr; Change my answer</button>
+    <p class="privacy">Empty is fine. The well works either way.</p>
+  </section>
+
+  <!-- SCREEN 3 : prayer + step + verse -->
+  <section id="screen-response" class="screen">
+    <p class="kicker">FROM THE WELL</p>
+    <p class="brought" id="brought-response"></p>
+
+    <p class="kicker">A PRAYER FOR PROVISION</p>
+    <p class="prayer" id="prayer"></p>
+
+    <p class="kicker">ONE STEP THIS WEEK</p>
+    <div class="step-card"><p id="step"></p></div>
+
+    <p class="kicker">GOD&rsquo;S ECONOMICS</p>
+    <div class="verse-card">
+      <p class="verse" id="verse"></p>
+      <p class="ref" id="ref"></p>
+    </div>
+
+    <p class="closing">You are not<br>your bank account.</p>
+    <button class="ghost" id="again" style="margin-top:16px">Return to the well</button>
+  </section>
+
+  <footer>A Twlv2 Well experiment &middot; prototype<br>Everything runs on this page &mdash; nothing is sent or stored anywhere.</footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var $ = function(id){ return document.getElementById(id); };
+
+  /* ---------- one prayer + step + verse per chip ---------- */
+  var SETS = {
+    debt: {
+      label: "Debt",
+      prayer: "Father, the numbers feel louder than Your voice right now \u2014 so we\u2019re bringing them to You on purpose. Give wisdom for every decision this week, and peace that doesn\u2019t depend on a zero balance. Forgive the shame, steady the heart, and help them take it one payment, one honest page, one day at a time. You\u2019re not disappointed in them \u2014 You\u2019re with them.",
+      step: "List every debt, smallest to largest, on one page. That\u2019s the whole assignment.",
+      ref: "Proverbs 21:5",
+      verse: "The plans of the diligent lead to profit as surely as haste leads to poverty."
+    },
+    rent: {
+      label: "Rent / housing",
+      prayer: "Father, home should feel safe \u2014 and right now it doesn\u2019t. We\u2019re asking for wisdom for the conversation that needs to happen, and peace in the nights before it. You know exactly what they need to stay housed and whole. Go before them with favor, provide what they can\u2019t manufacture, and remind them at 3am that they\u2019re not alone in this.",
+      step: "Call your landlord or lender BEFORE the due date \u2014 ask what options exist.",
+      ref: "Matthew 6:33",
+      verse: "But seek first his kingdom and his righteousness, and all these things will be given to you as well."
+    },
+    shame: {
+      label: "Shame about money",
+      prayer: "Father, they\u2019ve been carrying this in secret \u2014 and secrets grow shame. We\u2019re asking You to break its power tonight. Remind them that a number never defined their worth in Your eyes, not once. Give them courage to say one true thing out loud to one safe person. Let Your kindness \u2014 not condemnation \u2014 do the changing.",
+      step: "Tell one trusted person one true number this week.",
+      ref: "Psalm 34:5",
+      verse: "Those who look to him are radiant; their faces are never covered with shame."
+    },
+    job: {
+      label: "Job / income",
+      prayer: "Father, work feels uncertain \u2014 and that shakes everything downstream. We\u2019re asking for open doors this week, yes \u2014 but more than that, for wisdom to know which ones are Yours. Steady their hands for the applications, their voice for the calls, their heart for the waiting. Provide enough for today, and peace about tomorrow.",
+      step: "Send 3 applications or make 2 calls \u2014 small, countable.",
+      ref: "Colossians 3:23",
+      verse: "Whatever you do, work at it with all your heart, as working for the Lord, not for human masters."
+    },
+    other: {
+      label: "Something else",
+      prayer: "Father, they didn\u2019t pick a label \u2014 they just know money is weighing on them. You don\u2019t need the category to meet the need. Give them wisdom for the part they can control, peace for the part they can\u2019t, and courage to name it out loud someday. You\u2019re the provider, not the panic. Hold them steady.",
+      step: "Write the number you\u2019re afraid of on paper. Named fears shrink.",
+      ref: "Philippians 4:19",
+      verse: "And my God will meet all your needs according to the riches of his glory in Christ Jesus."
+    }
+  };
+
+  var choice = null;
+
+  function esc(s){
+    return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;")
+      .replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+  }
+  function show(id){
+    var screens = document.querySelectorAll(".screen");
+    for (var i = 0; i < screens.length; i++) screens[i].classList.remove("active");
+    $(id).classList.add("active");
+    window.scrollTo(0, 0);
+  }
+
+  /* --- landing: tapping a chip continues --- */
+  var chips = document.querySelectorAll(".chip");
+  for (var i = 0; i < chips.length; i++){
+    chips[i].addEventListener("click", function(){
+      choice = this.getAttribute("data-choice");
+      $("echo-choice").innerHTML = "What\u2019s keeping you up:<br><span>" + esc(SETS[choice].label) + "</span>";
+      $("sentence").value = "";
+      show("screen-sentence");
+      setTimeout(function(){ $("sentence").focus(); }, 350);
+    });
+  }
+
+  /* --- sentence screen: back + continue (empty is fine) --- */
+  $("back-chips").addEventListener("click", function(){
+    choice = null;
+    $("sentence").value = "";
+    show("screen-landing");
+  });
+
+  $("continue").addEventListener("click", function(){
+    if (!choice || !SETS[choice]) { show("screen-landing"); return; }
+    var set = SETS[choice];
+    var raw = $("sentence").value.trim();
+
+    var echo = "What you brought to the well:<br><span>" + esc(set.label) + "</span>";
+    if (raw){
+      var short = raw.length > 140 ? raw.slice(0, 140).replace(/\s+\S*$/, "") + "\u2026" : raw;
+      echo += "<br>\u201C" + esc(short) + "\u201D";
+    }
+    $("brought-response").innerHTML = echo;
+
+    $("prayer").innerHTML = esc(set.prayer) + ' <span class="amen">In Jesus\u2019 name, amen.</span>';
+    $("step").textContent = set.step;
+    $("verse").textContent = set.verse;
+    $("ref").textContent = set.ref + " \u00B7 NIV";
+
+    show("screen-response");
+  });
+
+  /* --- response: return to the well resets everything --- */
+  $("again").addEventListener("click", function(){
+    choice = null;
+    $("sentence").value = "";
+    show("screen-landing");
+  });
+})();
+</script>
+</body>
+</html>

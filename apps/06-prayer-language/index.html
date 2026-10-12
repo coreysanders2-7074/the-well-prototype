@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#1B1A1A">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Noto+Serif:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<title>The Well — Prayer Language Quiz</title>
+<style>
+    :root{
+    --ink:#1B1A1A;
+    --ink2:#262524;
+    --accent:#FD5200;
+    --accent-soft:#ff6a1f;
+    --paper:#F5F2EB;
+    --muted:#CFC8C8;
+    --card:rgba(255,255,255,.045);
+    --line:rgba(253,82,0,.28);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:'Montserrat',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    background:radial-gradient(120% 90% at 50% 0%, #2b2826 0%, var(--ink) 55%, #0e0d0c 100%);
+    color:var(--paper);
+    min-height:100dvh;
+    display:flex;justify-content:center;
+    -webkit-font-smoothing:antialiased;
+  }
+  .app{
+    width:100%;max-width:430px;min-height:100dvh;
+    display:flex;flex-direction:column;
+    padding:28px 24px calc(20px + env(safe-area-inset-bottom));
+    position:relative;
+  }
+  .screen{display:none;flex-direction:column;flex:1;animation:rise .5s ease both}
+  .screen.active{display:flex}
+  @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+  /* ---------- landing ---------- */
+  .ripple-wrap{position:relative;height:150px;margin:6px 0 2px;display:flex;align-items:center;justify-content:center}
+  .ripple{position:absolute;border:1px solid var(--line);border-radius:50%;animation:ripple 4.5s ease-out infinite}
+  .ripple.r1{width:56px;height:56px}
+  .ripple.r2{width:56px;height:56px;animation-delay:1.5s}
+  .ripple.r3{width:56px;height:56px;animation-delay:3s}
+  @keyframes ripple{0%{transform:scale(.4);opacity:.9}100%{transform:scale(2.6);opacity:0}}
+  .well-dot{
+    width:56px;height:56px;border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, #4a2410 0%, #241109 60%, #120a06 100%);
+    border:1px solid var(--line);
+    box-shadow:0 0 42px rgba(253,82,0,.22), inset 0 0 18px rgba(0,0,0,.6);
+  }
+  .title{
+    text-align:center;font-weight:800;letter-spacing:.06em;
+    font-size:30px;line-height:1.25;color:var(--paper);margin:4px 0 10px;
+  }
+  .title .hl{color:var(--accent-soft)}
+  .tagline{text-align:center;color:var(--muted);font-size:13.5px;letter-spacing:.06em;margin-bottom:26px}
+  .ask{
+    font-family:'Noto Serif',Georgia,serif;font-size:22px;line-height:1.45;
+    text-align:center;margin-bottom:18px;color:var(--paper);
+  }
+  .chips{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-bottom:26px}
+  .chip{
+    border:1px solid var(--line);border-radius:999px;
+    padding:8px 16px;font-size:13px;letter-spacing:.1em;color:var(--accent-soft);
+    background:rgba(253,82,0,.07);
+  }
+  button{
+    font:inherit;cursor:pointer;border:none;border-radius:14px;
+    padding:16px;font-size:16.5px;font-weight:700;letter-spacing:.02em;
+    transition:transform .12s, filter .2s;
+  }
+  button:active{transform:scale(.985)}
+  .primary{
+    background:var(--accent);
+    color:#fff;margin-top:8px;
+    box-shadow:0 8px 28px rgba(253,82,0,.28);
+  }
+  .primary:hover{filter:brightness(1.06)}
+  .ghost{
+    background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,.14);
+    margin-top:12px;font-weight:600;font-size:15px;
+  }
+  .privacy{
+    text-align:center;color:var(--muted);font-size:12.5px;line-height:1.6;
+    margin-top:22px;padding:0 8px;
+  }
+  .privacy b{color:var(--accent-soft);font-weight:600}
+
+  /* ---------- quiz ---------- */
+  .kicker{
+    text-align:center;color:var(--accent);font-size:12px;font-weight:700;
+    letter-spacing:.32em;text-indent:.32em;margin:8px 0 12px;
+  }
+  .progress{display:flex;gap:6px;margin:0 2px 24px}
+  .seg{flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,.1)}
+  .seg.on{background:linear-gradient(180deg,var(--accent-soft),var(--accent))}
+  .q{
+    font-family:'Noto Serif',Georgia,serif;font-size:23px;line-height:1.45;
+    text-align:center;margin-bottom:24px;color:var(--paper);
+  }
+  .opt{
+    text-align:left;width:100%;
+    background:var(--card);border:1px solid rgba(255,255,255,.12);border-radius:14px;
+    color:var(--paper);font-size:15.5px;line-height:1.5;font-weight:500;
+    padding:16px 18px;margin-bottom:12px;letter-spacing:0;
+  }
+  .opt:hover{border-color:var(--accent);background:rgba(253,82,0,.08)}
+  .opt:active{transform:scale(.985)}
+
+  /* ---------- result card ---------- */
+  .card{
+    border:1px solid var(--line);border-radius:20px;
+    background:linear-gradient(180deg, rgba(253,82,0,.07), rgba(255,255,255,.02));
+    padding:34px 26px 30px;margin:6px 0 20px;
+    text-align:center;position:relative;overflow:hidden;
+    box-shadow:0 18px 50px rgba(0,0,0,.45), inset 0 0 60px rgba(253,82,0,.04);
+  }
+  .card::before{
+    content:"";position:absolute;top:10px;left:10px;right:10px;bottom:10px;
+    border:1px solid rgba(253,82,0,.18);border-radius:14px;pointer-events:none;
+  }
+  .badge{
+    width:64px;height:64px;border-radius:50%;margin:0 auto 14px;
+    display:flex;align-items:center;justify-content:center;
+    border:1px solid var(--line);
+    background:radial-gradient(circle at 35% 30%, #4a2410 0%, #241109 60%, #120a06 100%);
+    box-shadow:0 0 36px rgba(253,82,0,.25), inset 0 0 16px rgba(0,0,0,.6);
+    color:var(--accent-soft);font-family:'Montserrat',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:30px;font-weight:700;
+  }
+  .type-kicker{
+    color:var(--accent);font-size:11.5px;font-weight:700;
+    letter-spacing:.34em;text-indent:.34em;margin-bottom:10px;
+  }
+  .type-name{
+    font-size:38px;font-weight:800;letter-spacing:.18em;text-indent:.18em;
+    color:var(--paper);margin-bottom:18px;
+  }
+  .divider{width:56px;height:2px;background:var(--accent);margin:0 auto 20px;opacity:.7}
+  .read{
+    font-family:'Noto Serif',Georgia,serif;font-size:16.5px;line-height:1.7;
+    color:#F5F2EB;margin-bottom:24px;text-align:center;
+  }
+  .verse{
+    font-family:'Noto Serif',Georgia,serif;font-size:16px;line-height:1.65;
+    color:var(--paper);font-style:italic;margin-bottom:10px;
+  }
+  .ref{text-align:center;color:var(--accent-soft);font-size:13px;letter-spacing:.1em;font-weight:600;margin-bottom:26px}
+  .practice{
+    text-align:left;background:rgba(253,82,0,.08);
+    border:1px solid var(--line);border-radius:14px;
+    padding:18px 18px 16px;margin-bottom:4px;
+  }
+  .practice .plabel{
+    color:var(--accent-soft);font-size:11.5px;font-weight:700;
+    letter-spacing:.28em;text-indent:.28em;margin-bottom:10px;
+  }
+  .practice p{font-size:15px;line-height:1.65;color:var(--paper)}
+  .shot{
+    text-align:center;color:var(--muted);font-size:13px;margin:6px 0 4px;letter-spacing:.03em;
+  }
+  footer{
+    margin-top:auto;padding-top:26px;text-align:center;
+    color:#8a8484;font-size:11.5px;letter-spacing:.06em;line-height:1.7;
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- SCREEN 1 : landing -->
+  <section id="screen-landing" class="screen active">
+    <div class="ripple-wrap">
+      <div class="ripple r1"></div><div class="ripple r2"></div><div class="ripple r3"></div>
+      <div class="well-dot"></div>
+    </div>
+    <p class="title">What&rsquo;s your<br><span class="hl">prayer language?</span></p>
+    <div class="chips">
+      <span class="chip">8 QUESTIONS</span>
+      <span class="chip">2 MINUTES</span>
+      <span class="chip">5 LANGUAGES</span>
+    </div>
+    <p class="ask">Warrior, Whisperer, Journaler,<br>Walker, or Weeper &mdash;<br>discover how you&rsquo;re wired to pray.</p>
+    <button class="primary" id="start">Start the quiz</button>
+    <p class="privacy"><b>No answers are saved.</b><br>This runs entirely on your screen &mdash; when you leave, it&rsquo;s gone.</p>
+  </section>
+
+  <!-- SCREEN 2 : quiz -->
+  <section id="screen-quiz" class="screen">
+    <p class="kicker" id="qcount">QUESTION 1 OF 8</p>
+    <div class="progress" id="progress"></div>
+    <p class="q" id="qtext"></p>
+    <div id="opts"></div>
+  </section>
+
+  <!-- SCREEN 3 : result -->
+  <section id="screen-result" class="screen">
+    <div class="card">
+      <div class="badge" id="badge">W</div>
+      <p class="type-kicker">YOUR PRAYER LANGUAGE</p>
+      <p class="type-name" id="tname">WARRIOR</p>
+      <div class="divider"></div>
+      <p class="read" id="tread"></p>
+      <p class="verse" id="tverse"></p>
+      <p class="ref" id="tref"></p>
+      <div class="practice">
+        <p class="plabel">ONE PRACTICE TO TRY TONIGHT</p>
+        <p id="tpractice"></p>
+      </div>
+    </div>
+    <p class="shot">&#128247; Screenshot this &mdash; it&rsquo;s yours to keep.</p>
+    <button class="ghost" id="retake">Retake the quiz</button>
+  </section>
+
+  <footer>A Twlv2 Well experiment &middot; prototype<br>Everything runs on this page &mdash; nothing is sent or stored anywhere.</footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var $ = function(id){ return document.getElementById(id); };
+
+  /* ---------- types (tie-break order: first listed wins) ---------- */
+  var TYPES = [
+    {
+      name:"WARRIOR",
+      initial:"W",
+      read:"You\u2019re wired for holy boldness. You don\u2019t tiptoe up to God \u2014 you march in like you belong there, because you do. For you, prayer isn\u2019t a whisper in the dark; it\u2019s standing your ground in the light and refusing to move until heaven answers.",
+      verse:"\u201CAnd pray in the Spirit on all occasions with all kinds of prayers and requests. With this in mind, be alert and always keep on praying for all the Lord\u2019s people.\u201D",
+      ref:"EPHESIANS 6:18 \u00B7 NIV",
+      practice:"Tonight (5 minutes): stand up, name ONE thing you\u2019re believing God for, and say it out loud three times \u2014 like you\u2019re telling a mountain to move. End with \u201CAmen,\u201D and mean it."
+    },
+    {
+      name:"WHISPERER",
+      initial:"W",
+      read:"You\u2019re wired for stillness. While the world gets louder, you get quieter \u2014 and that\u2019s exactly where you hear Him best. Your faith runs deep because your prayers don\u2019t need an audience; sometimes the most powerful thing you can say to God is almost nothing at all.",
+      verse:"\u201CBe still, and know that I am God.\u201D",
+      ref:"PSALM 46:10 \u00B7 NIV",
+      practice:"Tonight (5 minutes): sit somewhere quiet, set a timer, and pray one sentence \u2014 \u201CFather, I\u2019m here.\u201D Then simply be still for the rest. When your mind wanders, come back to the sentence."
+    },
+    {
+      name:"JOURNALER",
+      initial:"J",
+      read:"You\u2019re wired to think on paper. Your pen finds the prayers your mouth can\u2019t reach, and flipping back through old pages is one of the main ways you see God was working all along. For you, writing isn\u2019t a habit \u2014 it\u2019s an altar.",
+      verse:"\u201CWrite down the revelation and make it plain on tablets so that a herald may run with it.\u201D",
+      ref:"HABAKKUK 2:2 \u00B7 NIV",
+      practice:"Tonight (5 minutes): open a notebook and finish this sentence three different ways \u2014 \u201CGod, if I\u2019m honest\u2026\u201D Then close the notebook and sleep. No editing."
+    },
+    {
+      name:"WALKER",
+      initial:"W",
+      read:"You\u2019re wired for prayer in motion. Stillness shuts you down, but give you a sidewalk and a sunrise and suddenly everything becomes a conversation. You process with your feet, and God has always been happy to meet people on the road.",
+      verse:"\u201CAnd what does the Lord require of you? To act justly and to love mercy and to walk humbly with your God.\u201D",
+      ref:"MICAH 6:8 \u00B7 NIV",
+      practice:"Tonight (5 minutes): take a slow walk around the block \u2014 or pace your hallway. No music, no phone. Tell God about your day out loud, like He\u2019s walking right next to you."
+    },
+    {
+      name:"WEEPER",
+      initial:"W",
+      read:"You\u2019re wired for honest emotion. You don\u2019t sanitize your prayers \u2014 you bring God the unfiltered version, tears and all. Scripture calls it \u201Cgroans that words cannot express,\u201D and it may be the purest form of prayer there is.",
+      verse:"\u201CIn the same way, the Spirit helps us in our weakness. We do not know what we ought to pray for, but the Spirit himself intercedes for us through wordless groans.\u201D",
+      ref:"ROMANS 8:26 \u00B7 NIV",
+      practice:"Tonight (5 minutes): put on one worship song, sit with it, and let yourself feel whatever comes. No fixing, no filtering. Tell God the truest thing you\u2019re carrying \u2014 even if it comes out in tears."
+    }
+  ];
+
+  /* ---------- 8 questions, each option maps to a type index ---------- */
+  var QUESTIONS = [
+    {
+      q:"When life gets heavy, you\u2026",
+      opts:[
+        { t:"Go to war \u2014 I tell God exactly what I need and refuse to let go.", type:0 },
+        { t:"Go quiet \u2014 my prayers get shorter and softer, not longer.", type:1 },
+        { t:"Let it out \u2014 tears say the things I can\u2019t find words for.", type:4 }
+      ]
+    },
+    {
+      q:"Your ideal morning with God looks like\u2026",
+      opts:[
+        { t:"An open journal, pen moving before my brain catches up.", type:2 },
+        { t:"A walk. My clearest prayers happen in motion.", type:3 },
+        { t:"Stillness. No phone, no noise \u2014 just His presence.", type:1 }
+      ]
+    },
+    {
+      q:"The verses you underline are the ones about\u2026",
+      opts:[
+        { t:"Victory, authority, standing your ground.", type:0 },
+        { t:"Honesty \u2014 the raw, unedited stuff, like David\u2019s confessions.", type:2 },
+        { t:"The journey \u2014 God leading, guiding, going before.", type:3 }
+      ]
+    },
+    {
+      q:"When you can\u2019t sleep at night, you\u2026",
+      opts:[
+        { t:"Cry it out. Nighttime makes everything feel closer.", type:4 },
+        { t:"Breathe His name. Simple, slow, over and over.", type:1 },
+        { t:"Get up and write \u2014 the thoughts won\u2019t stop until they\u2019re on paper.", type:2 }
+      ]
+    },
+    {
+      q:"Your prayer voice \u2014 the one you use when no one\u2019s listening \u2014 is\u2026",
+      opts:[
+        { t:"Bold. I speak to mountains like they have to move.", type:0 },
+        { t:"Conversational \u2014 like we\u2019re walking side by side, talking it through.", type:3 },
+        { t:"Broken open. Real first, polished never.", type:4 }
+      ]
+    },
+    {
+      q:"Pick the scene that feels most like prayer to you:",
+      opts:[
+        { t:"A desk lamp, a full page, a question finally answered in ink.", type:2 },
+        { t:"Hands raised, enemy on the run, breakthrough in the air.", type:0 },
+        { t:"A trail at dawn, phone in the pocket, God in the wind.", type:3 }
+      ]
+    },
+    {
+      q:"Your church people would say your faith is most visible when you\u2026",
+      opts:[
+        { t:"Sit in the quiet presence of God \u2014 unhurried, undistracted.", type:1 },
+        { t:"Worship with everything leaking \u2014 tears included, no apology.", type:4 },
+        { t:"Bring a note nobody asked for: \u201Cthis verse reminded me of you.\u201D", type:2 }
+      ]
+    },
+    {
+      q:"If someone asked you to pray out loud right now, you would\u2026",
+      opts:[
+        { t:"Rather walk and talk it out with them \u2014 prayer doesn\u2019t need a podium.", type:3 },
+        { t:"Go for it \u2014 direct, confident, expecting something to shift.", type:0 },
+        { t:"Let it be real \u2014 I\u2019d rather be honest than impressive.", type:4 }
+      ]
+    }
+  ];
+
+  var scores = [0, 0, 0, 0, 0];
+  var qi = 0;
+
+  function show(id){
+    var screens = document.querySelectorAll(".screen");
+    for (var i = 0; i < screens.length; i++) screens[i].classList.remove("active");
+    $(id).classList.add("active");
+    window.scrollTo(0, 0);
+  }
+
+  function renderProgress(){
+    var html = "";
+    for (var i = 0; i < QUESTIONS.length; i++){
+      html += '<div class="seg' + (i <= qi ? " on" : "") + '"></div>';
+    }
+    $("progress").innerHTML = html;
+  }
+
+  function renderQuestion(){
+    var Q = QUESTIONS[qi];
+    $("qcount").textContent = "QUESTION " + (qi + 1) + " OF " + QUESTIONS.length;
+    renderProgress();
+    $("qtext").textContent = Q.q;
+    var box = $("opts");
+    box.innerHTML = "";
+    for (var i = 0; i < Q.opts.length; i++){
+      (function(opt){
+        var b = document.createElement("button");
+        b.className = "opt";
+        b.textContent = opt.t;
+        b.addEventListener("click", function(){
+          scores[opt.type]++;
+          qi++;
+          if (qi < QUESTIONS.length){
+            renderQuestion();
+          } else {
+            showResult();
+          }
+          window.scrollTo(0, 0);
+        });
+        box.appendChild(b);
+      })(Q.opts[i]);
+    }
+  }
+
+  /* deterministic tie-break: first type in TYPES order with the max score */
+  function winnerIndex(){
+    var best = 0;
+    for (var i = 1; i < scores.length; i++){
+      if (scores[i] > scores[best]) best = i;
+    }
+    return best;
+  }
+
+  function showResult(){
+    var w = winnerIndex();
+    var T = TYPES[w];
+    $("badge").textContent = T.initial;
+    $("tname").textContent = T.name;
+    $("tread").textContent = T.read;
+    $("tverse").textContent = T.verse;
+    $("tref").textContent = T.ref;
+    $("tpractice").textContent = T.practice;
+    show("screen-result");
+  }
+
+  $("start").addEventListener("click", function(){
+    qi = 0;
+    renderQuestion();
+    show("screen-quiz");
+  });
+
+  $("retake").addEventListener("click", function(){
+    scores = [0, 0, 0, 0, 0];
+    qi = 0;
+    show("screen-landing");
+  });
+})();
+</script>
+</body>
+</html>

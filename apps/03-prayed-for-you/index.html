@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#1B1A1A">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Noto+Serif:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<title>The Well — Someone Prayed For You</title>
+<style>
+    :root{
+    --ink:#1B1A1A;
+    --ink2:#262524;
+    --accent:#FD5200;
+    --accent-soft:#ff6a1f;
+    --paper:#F5F2EB;
+    --muted:#CFC8C8;
+    --card:rgba(255,255,255,.045);
+    --line:rgba(253,82,0,.28);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:'Montserrat',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    background:radial-gradient(120% 90% at 50% 0%, #2b2826 0%, var(--ink) 55%, #0e0d0c 100%);
+    color:var(--paper);
+    min-height:100dvh;
+    display:flex;justify-content:center;
+    -webkit-font-smoothing:antialiased;
+  }
+  .app{
+    width:100%;max-width:430px;min-height:100dvh;
+    display:flex;flex-direction:column;
+    padding:28px 24px calc(20px + env(safe-area-inset-bottom));
+    position:relative;
+  }
+  .screen{display:none;flex-direction:column;flex:1;animation:rise .5s ease both}
+  .screen.active{display:flex}
+  @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+  /* ---------- shared ---------- */
+  h1{
+    text-align:center;font-weight:700;letter-spacing:.42em;text-indent:.42em;
+    font-size:21px;color:var(--accent-soft);margin-bottom:10px;
+  }
+  .tagline{text-align:center;color:var(--muted);font-size:13.5px;letter-spacing:.06em;margin-bottom:26px}
+  .kicker{
+    text-align:center;color:var(--accent);font-size:12px;font-weight:700;
+    letter-spacing:.32em;text-indent:.32em;margin:8px 0 12px;
+  }
+  .ask{
+    font-family:'Noto Serif',Georgia,serif;font-size:22px;line-height:1.45;
+    text-align:center;margin-bottom:18px;color:var(--paper);
+  }
+  .soft{text-align:center;color:var(--muted);font-size:14.5px;line-height:1.65;margin-bottom:8px;padding:0 6px}
+  .soft span{color:var(--paper)}
+  button{
+    font:inherit;cursor:pointer;border:none;border-radius:14px;
+    padding:16px;font-size:16.5px;font-weight:700;letter-spacing:.02em;
+    transition:transform .12s, filter .2s;
+  }
+  button:active{transform:scale(.985)}
+  .primary{
+    background:var(--accent);
+    color:#fff;margin-top:8px;
+    box-shadow:0 8px 28px rgba(253,82,0,.28);
+  }
+  .primary:hover{filter:brightness(1.06)}
+  .ghost{
+    background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,.14);
+    margin-top:12px;font-weight:600;font-size:15px;
+  }
+  textarea{
+    width:100%;min-height:132px;resize:vertical;
+    background:var(--card);border:1px solid rgba(255,255,255,.12);border-radius:14px;
+    color:var(--paper);font-size:16px;line-height:1.55;padding:16px;
+    outline:none;transition:border .2s, box-shadow .2s;
+  }
+  textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(253,82,0,.15)}
+  textarea::placeholder{color:#8a8484}
+  textarea.shake{animation:shake .35s}
+  @keyframes shake{0%,100%{transform:none}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+  .hint{min-height:22px;text-align:center;color:var(--accent-soft);font-size:13px;margin:10px 0 4px}
+  .privacy{
+    text-align:center;color:var(--muted);font-size:12.5px;line-height:1.6;
+    margin-top:22px;padding:0 8px;
+  }
+  .privacy b{color:var(--accent-soft);font-weight:600}
+  .well-dot{
+    width:56px;height:56px;border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, #4a2410 0%, #241109 60%, #120a06 100%);
+    border:1px solid var(--line);
+    box-shadow:0 0 42px rgba(253,82,0,.22), inset 0 0 18px rgba(0,0,0,.6);
+  }
+  .ripple-wrap{position:relative;height:150px;margin:6px 0 2px;display:flex;align-items:center;justify-content:center}
+  .ripple{position:absolute;border:1px solid var(--line);border-radius:50%;animation:ripple 4.5s ease-out infinite}
+  .ripple.r1{width:56px;height:56px}
+  .ripple.r2{width:56px;height:56px;animation-delay:1.5s}
+  .ripple.r3{width:56px;height:56px;animation-delay:3s}
+  @keyframes ripple{0%{transform:scale(.4);opacity:.9}100%{transform:scale(2.6);opacity:0}}
+
+  /* ---------- screen 1 : lock-screen notification ---------- */
+  .lock{justify-content:center;align-items:center;gap:10px}
+  .lock-time{font-size:13px;color:#8b94ad;letter-spacing:.24em;margin-bottom:6px}
+  .notif{
+    width:100%;max-width:340px;border-radius:20px;padding:16px 16px 18px;
+    background:rgba(20,26,48,.72);
+    border:1px solid rgba(255,255,255,.12);
+    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+    box-shadow:0 18px 50px rgba(0,0,0,.5), 0 0 40px rgba(253,82,0,.08);
+    animation:drop .7s cubic-bezier(.2,.9,.3,1.2) both;
+  }
+  @keyframes drop{from{opacity:0;transform:translateY(-26px) scale(.97)}to{opacity:1;transform:none}}
+  .notif-top{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+  .notif-icon{
+    width:38px;height:38px;border-radius:11px;flex:none;
+    background:radial-gradient(circle at 35% 30%, #4a2410 0%, #241109 60%, #120a06 100%);
+    border:1px solid var(--line);
+    display:flex;align-items:center;justify-content:center;
+    font-size:19px;
+  }
+  .notif-app{font-size:11px;color:var(--muted);letter-spacing:.18em;font-weight:700}
+  .notif-time{font-size:11px;color:#8a8484;margin-left:auto}
+  .notif-title{font-size:16.5px;font-weight:700;color:var(--accent-soft);margin-bottom:6px}
+  .notif-body{font-size:14.5px;line-height:1.6;color:#CFC8C8}
+  .lock-sub{color:var(--muted);font-size:13px;letter-spacing:.06em;margin-top:14px}
+
+  /* ---------- screen 2 : situation picker ---------- */
+  .chips{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:6px 0 8px}
+  .chip{
+    background:var(--card);border:1px solid rgba(255,255,255,.14);border-radius:14px;
+    padding:18px 10px;font-size:15.5px;font-weight:600;color:var(--paper);
+    display:flex;flex-direction:column;align-items:center;gap:8px;
+    transition:border-color .2s, box-shadow .2s;
+  }
+  .chip .emo{font-size:26px;line-height:1}
+  .chip:hover{border-color:var(--accent)}
+  .chip:active{transform:scale(.97)}
+  .chip.selected{border-color:var(--accent);box-shadow:0 0 0 3px rgba(253,82,0,.18);color:var(--accent-soft)}
+
+  /* ---------- screen 3 : prayer reveal ---------- */
+  .stranger-note{
+    text-align:center;color:var(--muted);font-style:italic;
+    font-size:14.5px;line-height:1.6;margin-bottom:20px;padding:0 6px;
+  }
+  .verse-card{
+    background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:22px 20px;margin-bottom:26px;position:relative;overflow:hidden;
+  }
+  .verse-card::before{
+    content:"\201C";position:absolute;top:2px;left:14px;
+    font-family:'Noto Serif',Georgia,serif;font-size:64px;color:rgba(253,82,0,.16);line-height:1;
+  }
+  .verse{
+    font-family:'Noto Serif',Georgia,serif;font-size:18.5px;line-height:1.65;
+    margin-bottom:12px;position:relative;
+  }
+  .ref{text-align:right;color:var(--accent-soft);font-size:13.5px;letter-spacing:.08em;font-weight:600}
+  .prayer{
+    font-family:'Noto Serif',Georgia,serif;
+    font-size:16px;line-height:1.75;color:#F5F2EB;
+    background:rgba(255,255,255,.03);border-left:3px solid var(--accent);
+    border-radius:0 12px 12px 0;padding:16px 18px;margin-bottom:8px;
+  }
+  .prayer .amen{color:var(--accent-soft);font-weight:700}
+
+  /* ---------- screen 5 : chain count ---------- */
+  .chain{
+    text-align:center;margin:22px 0 6px;padding:24px 16px;
+    background:var(--card);border:1px solid var(--line);border-radius:16px;
+  }
+  .chain .num{
+    font-size:44px;font-weight:800;color:var(--accent-soft);letter-spacing:.04em;line-height:1;
+  }
+  .chain .label{
+    margin-top:10px;color:var(--muted);font-size:13px;letter-spacing:.14em;font-weight:600;
+  }
+  .chain .sim{margin-top:8px;color:#8a8484;font-size:11.5px;font-style:italic}
+
+  footer{
+    margin-top:auto;padding-top:26px;text-align:center;
+    color:#8a8484;font-size:11.5px;letter-spacing:.06em;line-height:1.7;
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- SCREEN 1 : the notification -->
+  <section id="screen-notif" class="screen lock active">
+    <p class="lock-time">SUNDAY &middot; 2:47 AM</p>
+    <div class="notif">
+      <div class="notif-top">
+        <div class="notif-icon" aria-hidden="true">&#128591;</div>
+        <span class="notif-app">THE WELL</span>
+        <span class="notif-time">2:47 AM</span>
+      </div>
+      <p class="notif-title">Someone prayed for you</p>
+      <p class="notif-body">An anonymous stranger just prayed for your exact situation. Tap to receive it.</p>
+    </div>
+    <button class="primary" id="open" style="width:100%">Open</button>
+    <p class="lock-sub">No name. No account. Just a prayer.</p>
+  </section>
+
+  <!-- SCREEN 2 : what are you carrying -->
+  <section id="screen-picker" class="screen">
+    <p class="kicker">BEFORE YOU OPEN IT</p>
+    <p class="ask">What are you carrying<br>tonight?</p>
+    <p class="soft">Pick the one closest to your heart &mdash;<br>someone prayed <span>for this exact thing</span>.</p>
+    <div class="chips" id="chips">
+      <button class="chip" data-sit="anxiety"><span class="emo">&#128560;</span>Anxiety</button>
+      <button class="chip" data-sit="grief"><span class="emo">&#128532;</span>Grief</button>
+      <button class="chip" data-sit="loneliness"><span class="emo">&#127963;</span>Loneliness</button>
+      <button class="chip" data-sit="money"><span class="emo">&#128178;</span>Money stress</button>
+      <button class="chip" data-sit="relationship"><span class="emo">&#128148;</span>Relationship pain</button>
+      <button class="chip" data-sit="health"><span class="emo">&#129657;</span>Health</button>
+    </div>
+    <p class="privacy">You never type a word here.<br>Nobody will ever know what you tapped.</p>
+  </section>
+
+  <!-- SCREEN 3 : the prayer, written for you -->
+  <section id="screen-prayer" class="screen">
+    <p class="kicker">WRITTEN FOR YOU BY A STRANGER, TONIGHT</p>
+    <p class="stranger-note" id="stranger-note"></p>
+    <div class="verse-card">
+      <p class="verse" id="verse"></p>
+      <p class="ref" id="ref"></p>
+    </div>
+    <p class="kicker">THEIR PRAYER FOR YOU</p>
+    <p class="prayer" id="prayer"></p>
+    <div style="height:18px"></div>
+    <button class="primary" id="forward">Pray it forward</button>
+  </section>
+
+  <!-- SCREEN 4 : write a prayer for a stranger -->
+  <section id="screen-write" class="screen">
+    <div class="ripple-wrap" style="height:110px">
+      <div class="ripple r1"></div><div class="ripple r2"></div>
+      <div class="well-dot" style="width:44px;height:44px"></div>
+    </div>
+    <p class="kicker">PRAY IT FORWARD</p>
+    <p class="ask" style="font-size:20px">Now cover a stranger<br>the same way.</p>
+    <p class="soft">Someone out there is carrying something heavy.<br>Write a short prayer for them &mdash;<br>they&rsquo;ll never know your name.</p>
+    <textarea id="your-prayer" placeholder="Write it like you&rsquo;re writing to a friend you&rsquo;ll never meet&hellip;" aria-label="Your prayer for a stranger"></textarea>
+    <p class="hint" id="hint"></p>
+    <button class="primary" id="send">Send it into the night</button>
+    <button class="ghost" id="skip">Skip for now</button>
+  </section>
+
+  <!-- SCREEN 5 : the chain continues -->
+  <section id="screen-done" class="screen" style="justify-content:center;text-align:center">
+    <div class="ripple-wrap" style="height:110px">
+      <div class="ripple r1"></div><div class="ripple r2"></div>
+      <div class="well-dot" style="width:44px;height:44px"></div>
+    </div>
+    <p class="kicker">SENT</p>
+    <p class="ask" style="font-size:20px">Your prayer is covering<br>someone right now.</p>
+    <p class="soft">They&rsquo;ll open their phone tonight<br>and find that someone prayed for them.</p>
+    <div class="chain">
+      <p class="num" id="chain-count">1,247</p>
+      <p class="label">PRAYERS CHAINED TONIGHT</p>
+      <p class="sim">prototype simulation &mdash; no real backend</p>
+    </div>
+    <button class="ghost" id="again">Do it again</button>
+  </section>
+
+  <footer>A Twlv2 Well experiment &middot; prototype<br>Everything runs on this page &mdash; nothing is sent or stored anywhere.</footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var $ = function(id){ return document.getElementById(id); };
+
+  /* ---------- six stranger-written prayers (NIV verses) ---------- */
+  var PRAYERS = {
+    anxiety: {
+      label: "anxiety",
+      ref: "Philippians 4:6\u20137",
+      verse: "Do not be anxious about anything, but in every situation, by prayer and petition, with thanksgiving, present your requests to God. And the peace of God, which transcends all understanding, will guard your hearts and your minds in Christ Jesus.",
+      prayer: "Stranger \u2014 I don\u2019t know your name, but tonight I sat with God about you. I asked Him to slow your racing thoughts, loosen the grip of every what-if, and keep you steady until morning. You don\u2019t have to carry it all alone. He\u2019s awake with you \u2014 and so was I, just now. Rest easy. You\u2019re covered."
+    },
+    grief: {
+      label: "grief",
+      ref: "Psalm 34:18",
+      verse: "The Lord is close to the brokenhearted and saves those who are crushed in spirit.",
+      prayer: "Stranger \u2014 I don\u2019t know what you lost, but tonight I held you before God. I asked Him to sit close to your broken heart, catch the tears you can\u2019t explain, and remind you that grief is love with nowhere to go. You\u2019re not alone in this valley. He walks it with you \u2014 and I\u2019m praying until the weight lifts."
+    },
+    loneliness: {
+      label: "loneliness",
+      ref: "Deuteronomy 31:6",
+      verse: "Be strong and courageous\u2026 for the Lord your God goes with you; he will never leave you nor forsake you.",
+      prayer: "Stranger \u2014 tonight I asked God to keep you company. You may feel unseen, but He never looks away. I prayed for one real friend, one honest conversation, one small sign that you belong. Until then, He\u2019s the friend who never leaves. And now someone knows you exist and cares \u2014 that someone is me, praying."
+    },
+    money: {
+      label: "money stress",
+      ref: "Philippians 4:19",
+      verse: "And my God will meet all your needs according to the riches of his glory in Christ Jesus.",
+      prayer: "Stranger \u2014 I don\u2019t know the bills or the numbers, but tonight I took them to God for you. I asked Him to provide in ways you can\u2019t predict, give you wisdom for the very next step, and quiet the worry about everything after that. He has never once missed a provision. You\u2019re covered \u2014 practically and completely."
+    },
+    relationship: {
+      label: "relationship pain",
+      ref: "1 Corinthians 13:4",
+      verse: "Love is patient, love is kind. It does not envy, it does not boast, it is not proud.",
+      prayer: "Stranger \u2014 someone you love is hurting you, or you\u2019re missing someone you can\u2019t have back. Tonight I asked God to meet you right in that ache \u2014 to heal what\u2019s broken, soften what\u2019s hard, and give you wisdom for every hard conversation ahead. Love was never supposed to leave you empty. He\u2019s holding your heart."
+    },
+    health: {
+      label: "a health battle",
+      ref: "Jeremiah 30:17",
+      verse: "But I will restore you to health and heal your wounds, declares the Lord.",
+      prayer: "Stranger \u2014 I don\u2019t know the diagnosis or the pain, but tonight I laid your body before God. I asked Him to touch what medicine can\u2019t reach, give you rest between the hard days, and fill the waiting with purpose. Whether healing comes suddenly or slowly \u2014 you are not fighting this alone. Not tonight."
+    }
+  };
+
+  var chainCount = 1247;
+
+  function fmt(n){ return n.toLocaleString("en-US"); }
+  function esc(s){
+    return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;")
+      .replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+  }
+  function show(id){
+    var screens = document.querySelectorAll(".screen");
+    for (var i = 0; i < screens.length; i++) screens[i].classList.remove("active");
+    $(id).classList.add("active");
+    window.scrollTo(0, 0);
+  }
+
+  /* screen 1 -> 2 */
+  $("open").addEventListener("click", function(){ show("screen-picker"); });
+
+  /* screen 2 -> 3 : pick a situation, reveal its prayer */
+  var chips = document.querySelectorAll("#chips .chip");
+  for (var i = 0; i < chips.length; i++){
+    chips[i].addEventListener("click", function(){
+      var sit = this.getAttribute("data-sit");
+      var hit = PRAYERS[sit];
+      if (!hit) return;
+      for (var j = 0; j < chips.length; j++) chips[j].classList.remove("selected");
+      this.classList.add("selected");
+      $("stranger-note").textContent = "You picked " + hit.label + ". This prayer was prayed for someone carrying " + hit.label + " \u2014 and tonight, it\u2019s for you.";
+      $("verse").textContent = hit.verse;
+      $("ref").textContent = hit.ref + " \u00B7 NIV";
+      $("prayer").innerHTML = esc(hit.prayer) + ' <span class="amen">In Jesus\u2019 name, amen.</span>';
+      var btn = this;
+      setTimeout(function(){ show("screen-prayer"); }, 220);
+    });
+  }
+
+  /* screen 3 -> 4 */
+  $("forward").addEventListener("click", function(){
+    $("hint").textContent = "";
+    show("screen-write");
+    setTimeout(function(){ $("your-prayer").focus(); }, 350);
+  });
+
+  /* screen 4 -> 5 : send (or skip) */
+  function send(){
+    var raw = $("your-prayer").value.trim();
+    if (!raw){
+      $("hint").textContent = "Give it your honest words first \u2014 even one sentence.";
+      var ta = $("your-prayer");
+      ta.classList.remove("shake"); void ta.offsetWidth; ta.classList.add("shake");
+      ta.focus();
+      return;
+    }
+    $("hint").textContent = "";
+    chainCount += 1;
+    $("chain-count").textContent = fmt(chainCount);
+    show("screen-done");
+  }
+  $("send").addEventListener("click", send);
+  $("skip").addEventListener("click", function(){
+    chainCount += 1;
+    $("chain-count").textContent = fmt(chainCount);
+    show("screen-done");
+  });
+
+  /* screen 5 : loop back */
+  $("again").addEventListener("click", function(){
+    $("your-prayer").value = "";
+    $("hint").textContent = "";
+    for (var j = 0; j < chips.length; j++) chips[j].classList.remove("selected");
+    show("screen-notif");
+  });
+})();
+</script>
+</body>
+</html>

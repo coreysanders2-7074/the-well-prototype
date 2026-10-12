@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#1B1A1A">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Noto+Serif:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<title>The Well — 7 Days at the Well</title>
+<style>
+    :root{
+    --ink:#1B1A1A;
+    --ink2:#262524;
+    --accent:#FD5200;
+    --accent-soft:#ff6a1f;
+    --paper:#F5F2EB;
+    --muted:#CFC8C8;
+    --card:rgba(255,255,255,.045);
+    --line:rgba(253,82,0,.28);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:'Montserrat',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    background:radial-gradient(120% 90% at 50% 0%, #2b2826 0%, var(--ink) 55%, #0e0d0c 100%);
+    color:var(--paper);
+    min-height:100dvh;
+    display:flex;justify-content:center;
+    -webkit-font-smoothing:antialiased;
+  }
+  .app{
+    width:100%;max-width:430px;min-height:100dvh;
+    display:flex;flex-direction:column;
+    padding:28px 24px calc(20px + env(safe-area-inset-bottom));
+    position:relative;
+  }
+  .screen{display:none;flex-direction:column;flex:1;animation:rise .5s ease both}
+  .screen.active{display:flex}
+  @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+  h1{
+    text-align:center;font-weight:700;letter-spacing:.3em;text-indent:.3em;
+    font-size:19px;color:var(--accent-soft);margin-bottom:10px;
+  }
+  .tagline{text-align:center;color:var(--muted);font-size:13.5px;letter-spacing:.06em;margin-bottom:26px}
+  .kicker{
+    text-align:center;color:var(--accent);font-size:12px;font-weight:700;
+    letter-spacing:.32em;text-indent:.32em;margin:8px 0 12px;
+  }
+  .ask{
+    font-family:'Noto Serif',Georgia,serif;font-size:22px;line-height:1.45;
+    text-align:center;margin-bottom:18px;color:var(--paper);
+  }
+  button{
+    font:inherit;cursor:pointer;border:none;border-radius:14px;
+    padding:16px;font-size:16.5px;font-weight:700;letter-spacing:.02em;
+    transition:transform .12s, filter .2s;
+  }
+  button:active{transform:scale(.985)}
+  .primary{
+    background:var(--accent);
+    color:#fff;margin-top:8px;
+    box-shadow:0 8px 28px rgba(253,82,0,.28);
+  }
+  .primary:hover{filter:brightness(1.06)}
+  .ghost{
+    background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,.14);
+    margin-top:12px;font-weight:600;font-size:15px;
+  }
+  textarea{
+    width:100%;min-height:132px;resize:vertical;
+    background:var(--card);border:1px solid rgba(255,255,255,.12);border-radius:14px;
+    color:var(--paper);font-size:16px;line-height:1.55;padding:16px;
+    outline:none;transition:border .2s, box-shadow .2s;
+  }
+  textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(253,82,0,.15)}
+  textarea::placeholder{color:#8a8484}
+
+  /* ---------- night map ---------- */
+  .map{
+    display:flex;justify-content:space-between;gap:6px;
+    margin:6px 2px 10px;
+  }
+  .dot{
+    flex:1;aspect-ratio:1;max-width:52px;border-radius:50%;
+    background:var(--card);border:1px solid rgba(255,255,255,.16);
+    color:var(--muted);font-size:15px;font-weight:700;
+    display:flex;align-items:center;justify-content:center;
+    padding:0;margin-top:0;
+    transition:background .3s, color .3s, box-shadow .3s, border-color .3s;
+  }
+  .dot.lit{
+    background:radial-gradient(circle at 35% 30%, var(--accent-soft), var(--accent));
+    border-color:var(--accent-soft);color:#fff;
+    box-shadow:0 0 22px rgba(253,82,0,.45);
+  }
+  .dot:active{transform:scale(.92)}
+  .map-hint{text-align:center;color:var(--muted);font-size:12.5px;margin-bottom:24px;letter-spacing:.04em}
+  .map-done{
+    text-align:center;color:var(--accent-soft);font-size:14px;line-height:1.7;
+    margin-bottom:18px;font-style:italic;
+  }
+  .privacy{
+    text-align:center;color:var(--muted);font-size:12.5px;line-height:1.6;
+    margin-top:22px;padding:0 8px;
+  }
+  .privacy b{color:var(--accent-soft);font-weight:600}
+
+  /* ---------- prayer timer ---------- */
+  .ring-wrap{position:relative;width:190px;height:190px;margin:14px auto 22px}
+  .ring{width:190px;height:190px}
+  .ringbg{stroke:rgba(255,255,255,.1);stroke-width:7;fill:none}
+  .ringfg{
+    stroke:var(--accent);stroke-width:7;fill:none;stroke-linecap:round;
+    stroke-dasharray:339.292;stroke-dashoffset:339.292;
+    transform:rotate(-90deg);transform-origin:center;
+  }
+  .count-wrap{
+    position:absolute;inset:0;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;
+  }
+  .count{font-size:52px;font-weight:700;color:var(--paper);font-variant-numeric:tabular-nums}
+  .count-label{color:var(--muted);font-size:12px;letter-spacing:.28em;text-indent:.28em;margin-top:4px}
+  .pline{
+    font-family:'Noto Serif',Georgia,serif;font-size:20px;line-height:1.6;
+    text-align:center;min-height:128px;display:flex;align-items:center;justify-content:center;
+    padding:0 8px;color:var(--paper);
+    opacity:1;transition:opacity .4s ease;
+  }
+  .pline.out{opacity:0}
+  .pline-hint{text-align:center;color:var(--muted);font-size:12.5px;margin-bottom:8px;letter-spacing:.05em}
+
+  /* ---------- verse card ---------- */
+  .verse-card{
+    background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:22px 20px;margin-bottom:26px;position:relative;overflow:hidden;
+  }
+  .verse-card::before{
+    content:"\201C";position:absolute;top:2px;left:14px;
+    font-family:'Noto Serif',Georgia,serif;font-size:64px;color:rgba(253,82,0,.16);line-height:1;
+  }
+  .verse{
+    font-family:'Noto Serif',Georgia,serif;font-size:18.5px;line-height:1.65;
+    margin-bottom:12px;position:relative;
+  }
+  .ref{text-align:right;color:var(--accent-soft);font-size:13.5px;letter-spacing:.08em;font-weight:600}
+  .carry{text-align:center;color:var(--muted);font-size:13px;letter-spacing:.06em;margin-bottom:20px}
+  .brought{
+    text-align:center;color:var(--muted);font-style:italic;
+    font-size:14.5px;line-height:1.6;margin-bottom:20px;padding:0 6px;
+  }
+  .brought span{color:var(--paper)}
+
+  /* ---------- invitation ---------- */
+  .invite{
+    font-family:'Noto Serif',Georgia,serif;font-size:21px;line-height:1.6;
+    text-align:center;margin:10px 0 8px;color:var(--paper);
+  }
+  .invite-sub{text-align:center;color:var(--muted);font-size:14px;line-height:1.7;margin-bottom:20px}
+  .note{
+    font-family:'Noto Serif',Georgia,serif;
+    font-size:16px;line-height:1.75;color:#F5F2EB;
+    background:rgba(255,255,255,.03);border-left:3px solid var(--accent);
+    border-radius:0 12px 12px 0;padding:16px 18px;margin-bottom:18px;
+  }
+  .note .last{color:var(--accent-soft);font-weight:700}
+
+  footer{
+    margin-top:auto;padding-top:26px;text-align:center;
+    color:#8a8484;font-size:11.5px;letter-spacing:.06em;line-height:1.7;
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- SCREEN 1 : the map -->
+  <section id="screen-map" class="screen active">
+    <h1>7 DAYS AT THE WELL</h1>
+    <p class="tagline">7 nights. One honest question each.</p>
+    <p class="map-done" id="map-done" hidden>All seven nights are complete.<br>The well is still here whenever you need it.</p>
+    <div class="map" id="map" role="group" aria-label="Seven nights"></div>
+    <p class="map-hint">tap any night &mdash; any order, no pressure</p>
+    <p class="privacy"><b>Nothing you write leaves this page.</b><br>No account. No names. No one will ever know you were here.</p>
+  </section>
+
+  <!-- SCREEN 2 : tonight's question -->
+  <section id="screen-night" class="screen">
+    <p class="kicker" id="night-kicker">NIGHT 1 OF 7</p>
+    <p class="ask" id="night-question"></p>
+    <textarea id="journal" placeholder="Write if you want &mdash; or just sit with it. No one sees this but you." aria-label="Optional reflection"></textarea>
+    <button class="primary" id="begin">Begin tonight&rsquo;s prayer</button>
+    <button class="ghost" id="back-map">&larr; Back to the map</button>
+  </section>
+
+  <!-- SCREEN 3 : guided prayer timer -->
+  <section id="screen-prayer" class="screen" style="justify-content:center">
+    <p class="kicker" id="prayer-kicker">NIGHT 1 &middot; GUIDED PRAYER</p>
+    <div class="ring-wrap">
+      <svg class="ring" viewBox="0 0 120 120" aria-hidden="true">
+        <circle class="ringbg" cx="60" cy="60" r="54"/>
+        <circle class="ringfg" id="ringfg" cx="60" cy="60" r="54"/>
+      </svg>
+      <div class="count-wrap">
+        <div class="count" id="count">60</div>
+        <div class="count-label">SECONDS</div>
+      </div>
+    </div>
+    <p class="pline" id="pline"></p>
+    <p class="pline-hint">breathe slow &middot; one line at a time</p>
+    <button class="ghost" id="skip">Skip to the verse</button>
+  </section>
+
+  <!-- SCREEN 4 : verse for tomorrow -->
+  <section id="screen-verse" class="screen">
+    <p class="kicker" id="verse-kicker">NIGHT 1 &middot; FOR TOMORROW</p>
+    <div class="verse-card">
+      <p class="verse" id="verse"></p>
+      <p class="ref" id="ref"></p>
+    </div>
+    <p class="carry">carry this into tomorrow</p>
+    <p class="brought" id="wrote" hidden></p>
+    <button class="primary" id="complete">Night complete</button>
+  </section>
+
+  <!-- SCREEN 5 : the invitation (after night 7 only) -->
+  <section id="screen-invite" class="screen" style="justify-content:center">
+    <p class="kicker">ONE MORE THING</p>
+    <p class="invite">There&rsquo;s a table with your name on it &mdash;<br>not a stage, a table.</p>
+    <p class="invite-sub">You can ignore this completely.<br>No follow-up. No guilt. The Well will still be here.</p>
+    <button class="primary" id="tellmore">Tell me more</button>
+    <button class="ghost" id="notnow">Not now</button>
+  </section>
+
+  <!-- SCREEN 6 : tell me more -->
+  <section id="screen-more" class="screen" style="justify-content:center">
+    <p class="kicker">THE TABLE</p>
+    <p class="note">Every couple of weeks, a few people from this well sit around an actual table &mdash; coffee, real conversation, zero pressure to be anything you&rsquo;re not. No cameras, no stage, no pitch.<br><br><span class="last">That&rsquo;s all &mdash; the Well will still be here.</span></p>
+    <button class="ghost" id="back-map2">&larr; Back to the map</button>
+  </section>
+
+  <footer>A Twlv2 Well experiment &middot; prototype<br>Everything runs on this page &mdash; nothing is sent or stored anywhere.</footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var $ = function(id){ return document.getElementById(id); };
+
+  function esc(s){
+    return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;")
+      .replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+  }
+  function show(id){
+    var screens = document.querySelectorAll(".screen");
+    for (var i = 0; i < screens.length; i++) screens[i].classList.remove("active");
+    $(id).classList.add("active");
+    window.scrollTo(0, 0);
+  }
+
+  /* ---------- the seven nights ---------- */
+  var NIGHTS = [
+    {
+      q: "What are you most afraid to admit you need?",
+      lines: [
+        "We\u2019re here tonight \u2014 no performance, no pretending.",
+        "There\u2019s something we\u2019ve needed for a long time and never said out loud.",
+        "We say it now, in the quiet: we need. And that is not weakness.",
+        "Meet us in the needing. Fill what we can\u2019t fill ourselves.",
+        "We end this minute the way we began \u2014 still here, still held, still heard."
+      ],
+      ref: "1 Peter 5:7",
+      verse: "Cast all your anxiety on him because he cares for you."
+    },
+    {
+      q: "Who do you need to forgive \u2014 including yourself?",
+      lines: [
+        "We\u2019re carrying a name \u2014 maybe theirs, maybe our own.",
+        "Forgiveness has felt like letting them off. Show us it\u2019s letting us free.",
+        "We release what we can\u2019t undo, and what was done to us.",
+        "Where bitterness has made a home, make room for peace instead.",
+        "We won\u2019t finish this tonight \u2014 we only begin. Beginning is enough."
+      ],
+      ref: "Colossians 3:13",
+      verse: "Bear with each other and forgive one another if any of you has a grievance against someone. Forgive as the Lord forgave you."
+    },
+    {
+      q: "What would you do differently if you truly believed you were loved?",
+      lines: [
+        "Before we\u2019ve done a thing, before we\u2019ve fixed a thing \u2014 we are loved.",
+        "Show us the fear that\u2019s been driving our decisions.",
+        "If we really believed we were loved, we would rest. Teach us to rest.",
+        "We unclench our hands from what we were never meant to control.",
+        "Tomorrow, we walk like people who are wanted."
+      ],
+      ref: "1 John 4:19",
+      verse: "We love because he first loved us."
+    },
+    {
+      q: "What are you holding that\u2019s too heavy to carry alone?",
+      lines: [
+        "Our arms are tired, and our hands won\u2019t open.",
+        "Tonight we lay down the weight we were never built to carry.",
+        "Teach us to trade carrying for trusting.",
+        "Lighten us \u2014 not by fixing everything, but by carrying us.",
+        "We leave this minute a little less alone with it all."
+      ],
+      ref: "Matthew 11:28",
+      verse: "Come to me, all you who are weary and burdened, and I will give you rest."
+    },
+    {
+      q: "Who does your heart keep returning to \u2014 and what do you wish you could say?",
+      lines: [
+        "There\u2019s someone on our mind right now.",
+        "You know the words we wish we\u2019d said \u2014 and the ones we still can\u2019t.",
+        "Reach them where we can\u2019t. Hold them where we\u2019re absent.",
+        "Give us the courage to say it, or the grace to release it.",
+        "Whatever is unfinished between us, we place in Your hands."
+      ],
+      ref: "Romans 8:26",
+      verse: "The Spirit himself intercedes for us through wordless groans."
+    },
+    {
+      q: "What would \u201Cenough\u201D look like for you?",
+      lines: [
+        "We\u2019re always reaching \u2014 for more proof, more peace, more of everything.",
+        "Show us where enough has been hiding all along.",
+        "Quiet the voice that says we haven\u2019t earned rest.",
+        "Teach us to be grateful for what is, even as we hope for what\u2019s next.",
+        "Tonight, we are enough. Tomorrow, we still will be."
+      ],
+      ref: "Psalm 23:1",
+      verse: "The Lord is my shepherd, I lack nothing."
+    },
+    {
+      q: "If you could change one thing about the way you live \u2014 starting tomorrow \u2014 what would it be?",
+      lines: [
+        "Seven nights. We showed up \u2014 that counts for more than we know.",
+        "Not everything. Just one honest change, starting tomorrow.",
+        "Give us the courage to begin small and the patience to continue.",
+        "Walk with us into tomorrow, and the day after that.",
+        "These nights are ending \u2014 but the well isn\u2019t going anywhere."
+      ],
+      ref: "Lamentations 3:22\u201323",
+      verse: "Because of the Lord\u2019s great love we are not consumed\u2026 they are new every morning; great is your faithfulness."
+    }
+  ];
+
+  var done = [false,false,false,false,false,false,false];
+  var nightIdx = 0;
+  var timer = null, t0 = 0, lineIdx = 0;
+
+  /* ---------- map ---------- */
+  function renderMap(){
+    var map = $("map");
+    map.innerHTML = "";
+    var allDone = true;
+    for (var i = 0; i < 7; i++){
+      (function(i){
+        if (!done[i]) allDone = false;
+        var b = document.createElement("button");
+        b.className = "dot" + (done[i] ? " lit" : "");
+        b.type = "button";
+        b.textContent = String(i + 1);
+        b.setAttribute("aria-label", "Night " + (i + 1) + (done[i] ? ", completed" : ""));
+        b.addEventListener("click", function(){ openNight(i); });
+        map.appendChild(b);
+      })(i);
+    }
+    $("map-done").hidden = !allDone;
+  }
+
+  /* ---------- night screen ---------- */
+  function openNight(i){
+    nightIdx = i;
+    $("night-kicker").textContent = "NIGHT " + (i + 1) + " OF 7";
+    $("night-question").textContent = NIGHTS[i].q;
+    $("journal").value = "";
+    show("screen-night");
+    setTimeout(function(){ $("journal").focus(); }, 350);
+  }
+  $("begin").addEventListener("click", function(){ startPrayer(); });
+  $("back-map").addEventListener("click", function(){ show("screen-map"); });
+
+  /* ---------- 60-second guided prayer ---------- */
+  var CIRC = 339.292;
+  function setLine(i, instant){
+    var el = $("pline");
+    if (instant){
+      el.textContent = NIGHTS[nightIdx].lines[i];
+      return;
+    }
+    el.classList.add("out");
+    setTimeout(function(){
+      el.textContent = NIGHTS[nightIdx].lines[i];
+      el.classList.remove("out");
+    }, 400);
+  }
+  function startPrayer(){
+    lineIdx = 0;
+    $("prayer-kicker").textContent = "NIGHT " + (nightIdx + 1) + " \u00B7 GUIDED PRAYER";
+    setLine(0, true);
+    $("count").textContent = "60";
+    $("ringfg").style.strokeDashoffset = CIRC;
+    show("screen-prayer");
+    clearInterval(timer);
+    t0 = Date.now();
+    timer = setInterval(tick, 200);
+  }
+  function tick(){
+    var el = (Date.now() - t0) / 1000;
+    if (el >= 60){ endPrayer(); return; }
+    $("count").textContent = String(Math.ceil(60 - el));
+    $("ringfg").style.strokeDashoffset = (CIRC * (1 - el / 60)).toFixed(1);
+    var li = Math.min(4, Math.floor(el / 12));
+    if (li !== lineIdx){ lineIdx = li; setLine(li, false); }
+  }
+  function endPrayer(){
+    clearInterval(timer);
+    showVerse();
+  }
+  $("skip").addEventListener("click", endPrayer);
+
+  /* ---------- verse for tomorrow ---------- */
+  function showVerse(){
+    var N = NIGHTS[nightIdx];
+    $("verse-kicker").textContent = "NIGHT " + (nightIdx + 1) + " \u00B7 FOR TOMORROW";
+    $("verse").textContent = N.verse;
+    $("ref").textContent = N.ref + " \u00B7 NIV";
+    var raw = $("journal").value.trim();
+    if (raw){
+      var short = raw.length > 140 ? raw.slice(0, 140).replace(/\s+\S*$/, "") + "\u2026" : raw;
+      $("wrote").innerHTML = "What you wrote tonight:<br><span>&ldquo;" + esc(short) + "&rdquo;</span>";
+      $("wrote").hidden = false;
+    } else {
+      $("wrote").hidden = true;
+    }
+    show("screen-verse");
+  }
+  $("complete").addEventListener("click", function(){
+    done[nightIdx] = true;
+    renderMap();
+    if (nightIdx === 6) show("screen-invite");
+    else show("screen-map");
+  });
+
+  /* ---------- invitation ---------- */
+  $("tellmore").addEventListener("click", function(){ show("screen-more"); });
+  $("notnow").addEventListener("click", function(){ show("screen-map"); });
+  $("back-map2").addEventListener("click", function(){ show("screen-map"); });
+
+  renderMap();
+})();
+</script>
+</body>
+</html>

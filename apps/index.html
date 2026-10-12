@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#1B1A1A">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Noto+Serif:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<title>The Well — Top 10 Prototypes</title>
+<style>
+  :root{
+    --ink:#1B1A1A;
+    --ink2:#262524;
+    --accent:#FD5200;
+    --accent-soft:#ff6a1f;
+    --paper:#F5F2EB;
+    --muted:#CFC8C8;
+    --card:rgba(255,255,255,.045);
+    --line:rgba(253,82,0,.28);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:'Montserrat',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    background:radial-gradient(120% 90% at 50% 0%, #2b2826 0%, var(--ink) 55%, #0e0d0c 100%);
+    color:var(--paper);
+    min-height:100dvh;
+    display:flex;justify-content:center;
+    -webkit-font-smoothing:antialiased;
+  }
+  .app{
+    width:100%;max-width:430px;min-height:100dvh;
+    display:flex;flex-direction:column;
+    padding:28px 24px calc(20px + env(safe-area-inset-bottom));
+  }
+  .kicker{
+    text-align:center;color:var(--accent);font-size:12px;font-weight:700;
+    letter-spacing:.32em;text-indent:.32em;margin:8px 0 12px;
+  }
+  h1{
+    text-align:center;font-weight:700;letter-spacing:.18em;text-indent:.18em;
+    font-size:22px;color:var(--paper);margin-bottom:8px;line-height:1.4;
+  }
+  .tagline{
+    text-align:center;color:var(--muted);font-size:13.5px;letter-spacing:.04em;
+    margin-bottom:26px;line-height:1.6;
+  }
+  .tagline em{font-family:'Noto Serif',Georgia,serif;color:var(--accent-soft)}
+  .grid{display:flex;flex-direction:column;gap:12px}
+  .card{
+    display:flex;align-items:center;gap:14px;text-decoration:none;color:inherit;
+    background:var(--card);border:1px solid rgba(255,255,255,.09);border-radius:16px;
+    padding:16px;transition:transform .12s, border-color .2s;
+  }
+  .card:active{transform:scale(.985)}
+  .card:hover{border-color:var(--line)}
+  .rank{
+    flex:0 0 40px;height:40px;border-radius:50%;
+    border:1px solid var(--line);color:var(--accent-soft);
+    display:flex;align-items:center;justify-content:center;
+    font-weight:700;font-size:14px;
+  }
+  .card.bonus .rank{border-color:var(--accent);color:#fff;background:var(--accent);font-size:11px}
+  .card-text{flex:1;min-width:0}
+  .card-text b{display:block;font-size:15px;font-weight:700;letter-spacing:.02em;margin-bottom:4px}
+  .card-text span{display:block;font-size:12.5px;color:var(--muted);line-height:1.5}
+  .chev{color:var(--muted);font-size:18px;flex:0 0 auto}
+  .section-label{
+    margin:26px 0 12px;text-align:center;color:var(--muted);
+    font-size:11px;font-weight:700;letter-spacing:.3em;text-indent:.3em;
+  }
+  footer{
+    margin-top:auto;padding-top:26px;text-align:center;
+    color:#8a8484;font-size:11.5px;letter-spacing:.06em;line-height:1.7;
+  }
+  footer a{color:var(--accent-soft);text-decoration:none}
+</style>
+</head>
+<body>
+<div class="app">
+  <p class="kicker">THE WELL</p>
+  <h1>Top 10 Prototypes</h1>
+  <p class="tagline"><em>Exposure is earned, not demanded.</em><br>Tap any well to step in. No signup, no names.</p>
+
+  <div class="grid">
+    <a class="card" href="../index.html">
+      <span class="rank">1</span>
+      <span class="card-text"><b>The Well — Flagship</b><span>One screen, no signup, no name. Tell God your deepest need.</span></span>
+      <span class="chev">&rsaquo;</span>
+    </a>
+    <a class="card" href="02-3am-well/">
+      <span class="rank">2</span>
+      <span class="card-text"><b>3AM Well</b><span>It's 3am, you're spiraling. Breathe, talk, hold a verse till morning.</span></span>
+      <span class="chev">&rsaquo;</span>
+    </a>
+    <a class="card" href="03-prayed-for-you/">
+      <span class="rank">3</span>
+      <span class="card-text"><b>Someone Prayed For You</b><span>A stranger prayed for your exact situation. Pray it forward.</span></span>
+      <span class="chev">&rsaquo;</span>
+    </a>
+    <a class="card" href="04-unsent-prayer/">
+      <span class="rank">4</span>
+      <span class="card-text"><b>The Unsent Prayer</b><span>The prayer you'd never pray out loud. Heard without flinching.</span></span>
+      <span class="chev">&rsaquo;</span>
+    </a>
+    <a class="card" href="05-7-days/">
+      <span class="rank">5</span>
+      <span class="card-text"><b>7 Days at the Well</b><span>Seven nights. One honest question each.</span></span>
+      <span class="chev">&rsaquo;</span>
+    </a>
+    <a class="card" href="06-prayer-language/">
+      <span class="rank">6</span>
+      <span class="card-text"><b>Prayer Language Quiz</b><span>Warrior, Whisperer, Journaler, Walker, or Weeper?</span></span>
+      <span class="chev">&rsaquo;</span>
+    </a>
+    <a class="card" href="07-panic-to-peace/">
+      <span class="rank">7</span>
+      <span class="card-text"><b>Panic to Peace</b><span>90 seconds. One button: &ldquo;I'm panicking.&rdquo;</span></span>
+      <span class="chev">&rsaquo;</span>
+    </a>
+    <a class="card" href="08-forgiveness-letter/">
+      <span class="rank">8</span>
+      <span class="card-text"><b>The Forgiveness Letter</b><span>The letter you'll never send. Release, seal, or burn it.</span></span>
+      <span class="chev">&rsaquo;</span>
+    </a>
+    <a class="card" href="09-money-peace/">
+      <span class="rank">9</span>
+      <span class="card-text"><b>Money Peace</b><span>Money keeps you up. No judgment, no prosperity gospel.</span></span>
+      <span class="chev">&rsaquo;</span>
+    </a>
+    <a class="card" href="10-doubt-room/">
+      <span class="rank">10</span>
+      <span class="card-text"><b>The Doubt Room</b><span>Doubt is a doorway, not a disease. Ask the hard questions.</span></span>
+      <span class="chev">&rsaquo;</span>
+    </a>
+  </div>
+
+  <p class="section-label">BONUS</p>
+  <div class="grid">
+    <a class="card bonus" href="11-detroit-resources/">
+      <span class="rank">+</span>
+      <span class="card-text"><b>Detroit Community Resource Hub</b><span>Real help, near you — matched to what's happening right now.</span></span>
+      <span class="chev">&rsaquo;</span>
+    </a>
+  </div>
+
+  <footer>A Twlv2 Well experiment &middot; prototypes<br>Everything runs on the page &mdash; nothing is sent or stored anywhere.</footer>
+</div>
+</body>
+</html>

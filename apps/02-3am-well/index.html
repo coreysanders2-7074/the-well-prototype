@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#1B1A1A">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Noto+Serif:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<title>The Well — 3AM</title>
+<style>
+    :root{
+    --ink:#1B1A1A;
+    --ink2:#262524;
+    --accent:#FD5200;
+    --accent-soft:#ff6a1f;
+    --paper:#F5F2EB;
+    --muted:#CFC8C8;
+    --card:rgba(255,255,255,.045);
+    --line:rgba(253,82,0,.28);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:'Montserrat',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    background:radial-gradient(120% 90% at 50% 0%, #2b2826 0%, var(--ink) 55%, #0e0d0c 100%);
+    color:var(--paper);
+    min-height:100dvh;
+    display:flex;justify-content:center;
+    -webkit-font-smoothing:antialiased;
+  }
+  .app{
+    width:100%;max-width:430px;min-height:100dvh;
+    display:flex;flex-direction:column;
+    padding:28px 24px calc(20px + env(safe-area-inset-bottom));
+    position:relative;
+  }
+  .screen{display:none;flex-direction:column;flex:1;animation:rise .5s ease both}
+  .screen.active{display:flex}
+  @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+  .kicker{
+    text-align:center;color:var(--accent);font-size:12px;font-weight:700;
+    letter-spacing:.32em;text-indent:.32em;margin:8px 0 12px;
+  }
+  .ask{
+    font-family:'Noto Serif',Georgia,serif;font-size:22px;line-height:1.45;
+    text-align:center;margin-bottom:18px;color:var(--paper);
+  }
+  button{
+    font:inherit;cursor:pointer;border:none;border-radius:14px;
+    padding:16px;font-size:16.5px;font-weight:700;letter-spacing:.02em;
+    transition:transform .12s, filter .2s;
+  }
+  button:active{transform:scale(.985)}
+  .primary{
+    background:var(--accent);
+    color:#fff;margin-top:8px;
+    box-shadow:0 8px 28px rgba(253,82,0,.28);
+  }
+  .primary:hover{filter:brightness(1.06)}
+  .ghost{
+    background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,.14);
+    margin-top:12px;font-weight:600;font-size:15px;
+  }
+  .verse-card{
+    background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:22px 20px;margin-bottom:26px;position:relative;overflow:hidden;
+  }
+  .verse-card::before{
+    content:"\201C";position:absolute;top:2px;left:14px;
+    font-family:'Noto Serif',Georgia,serif;font-size:64px;color:rgba(253,82,0,.16);line-height:1;
+  }
+  .verse{
+    font-family:'Noto Serif',Georgia,serif;font-size:18.5px;line-height:1.65;
+    margin-bottom:12px;position:relative;
+  }
+  .ref{text-align:right;color:var(--accent-soft);font-size:13.5px;letter-spacing:.08em;font-weight:600}
+  .crisis{
+    border:1px solid #c0564f;background:rgba(192,86,79,.1);border-radius:12px;
+    padding:14px 16px;margin:14px 0 4px;font-size:14px;line-height:1.6;color:#f0d9d6;
+  }
+  .crisis b{color:#fff}
+  .crisis a{color:#fff;font-weight:700}
+  footer{
+    margin-top:auto;padding-top:26px;text-align:center;
+    color:#8a8484;font-size:11.5px;letter-spacing:.06em;line-height:1.7;
+  }
+
+  /* ---------- landing ---------- */
+  .moon-wrap{position:relative;height:190px;margin:10px 0 6px;display:flex;align-items:center;justify-content:center}
+  .moon{
+    width:96px;height:96px;border-radius:50%;
+    background:radial-gradient(circle at 38% 32%, #fdf6e3 0%, #ff6a1f 55%, #4a2410 100%);
+    box-shadow:0 0 60px rgba(253,82,0,.28);
+  }
+  .moon-halo{
+    position:absolute;width:96px;height:96px;border-radius:50%;
+    border:1px solid var(--line);animation:halo 6s ease-in-out infinite;
+  }
+  @keyframes halo{0%,100%{transform:scale(1.15);opacity:.5}50%{transform:scale(1.5);opacity:.08}}
+  .star{position:absolute;border-radius:50%;background:#fff;animation:twinkle 3.4s ease-in-out infinite}
+  @keyframes twinkle{0%,100%{opacity:.15}50%{opacity:.75}}
+
+  /* ---------- breathing ---------- */
+  .progress-track{
+    height:4px;border-radius:2px;background:rgba(255,255,255,.08);
+    margin:6px 0 4px;overflow:hidden;
+  }
+  .progress-fill{
+    height:100%;width:0%;border-radius:2px;
+    background:linear-gradient(90deg,var(--accent),var(--accent-soft));
+    transition:width .5s linear;
+  }
+  .progress-label{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.14em;margin-bottom:6px}
+  .breath-stage{
+    flex:1;display:flex;align-items:center;justify-content:center;
+    min-height:280px;position:relative;
+  }
+  .breath-glow{
+    position:absolute;width:230px;height:230px;border-radius:50%;
+    border:1px solid var(--line);opacity:.6;
+  }
+  #breath-circle{
+    width:120px;height:120px;border-radius:50%;
+    background:radial-gradient(circle at 38% 32%, #4a2410 0%, #241109 60%, #120a06 100%);
+    border:1px solid var(--line);
+    box-shadow:0 0 52px rgba(253,82,0,.24), inset 0 0 22px rgba(0,0,0,.6);
+    transform:scale(1);will-change:transform;
+  }
+  .breath-count{
+    position:absolute;font-family:'Montserrat',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:34px;color:var(--paper);
+    opacity:.9;text-shadow:0 2px 14px rgba(0,0,0,.5);
+  }
+  .breath-cue{
+    text-align:center;font-family:'Noto Serif',Georgia,serif;font-size:20px;
+    color:var(--accent-soft);letter-spacing:.1em;min-height:60px;margin-top:8px;
+  }
+
+  /* ---------- chat ---------- */
+  .chat{flex:1;display:flex;flex-direction:column;gap:12px;justify-content:flex-end;padding:10px 0 6px;overflow-y:auto}
+  .msg{
+    max-width:86%;padding:13px 16px;border-radius:16px;
+    font-family:'Noto Serif',Georgia,serif;
+    font-size:15.5px;line-height:1.6;animation:rise .45s ease both;
+  }
+  .msg.awake{
+    align-self:flex-start;background:var(--card);
+    border:1px solid var(--line);color:var(--paper);
+    border-bottom-left-radius:4px;
+  }
+  .msg .t{display:block;margin-top:8px;font-size:11px;color:#8a8484;letter-spacing:.08em}
+  .typing{
+    align-self:flex-start;display:flex;gap:6px;padding:14px 16px;
+    background:var(--card);border:1px solid var(--line);border-radius:16px;
+    border-bottom-left-radius:4px;
+  }
+  .typing span{width:7px;height:7px;border-radius:50%;background:var(--muted);animation:blink 1.2s infinite}
+  .typing span:nth-child(2){animation-delay:.2s}
+  .typing span:nth-child(3){animation-delay:.4s}
+  @keyframes blink{0%,60%,100%{opacity:.25}30%{opacity:1}}
+  #chat-actions{opacity:0;transition:opacity .6s}
+  #chat-actions.show{opacity:1}
+
+  /* ---------- verse ---------- */
+  .keep-card{
+    border:1px dashed rgba(253,82,0,.5);border-radius:16px;
+    padding:18px;margin-bottom:22px;text-align:center;
+    color:var(--muted);font-size:13.5px;line-height:1.7;
+  }
+  .keep-card b{color:var(--accent-soft)}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- SCREEN 1 : landing -->
+  <section id="screen-landing" class="screen active" style="justify-content:center">
+    <div class="moon-wrap" id="moon-wrap">
+      <div class="moon-halo"></div>
+      <div class="moon"></div>
+    </div>
+    <p class="kicker">3AM WELL</p>
+    <p class="ask">It&rsquo;s 3am.<br>You&rsquo;re not alone.</p>
+    <p style="text-align:center;color:var(--muted);font-size:14.5px;line-height:1.7;margin-bottom:24px;padding:0 10px">
+      Everyone&rsquo;s asleep. Your mind isn&rsquo;t.<br>
+      Stay with me for two minutes.<br>We&rsquo;ll breathe first.
+    </p>
+    <button class="primary" id="begin">Breathe with me</button>
+    <button class="ghost" id="go-chat">Just talk to me instead</button>
+  </section>
+
+  <!-- SCREEN 2 : guided breathing -->
+  <section id="screen-breathe" class="screen">
+    <p class="kicker">FOLLOW THE CIRCLE</p>
+    <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+    <p class="progress-label" id="progress-label">ROUND 1 OF 5</p>
+    <div class="breath-stage">
+      <div class="breath-glow"></div>
+      <div id="breath-circle"></div>
+      <div class="breath-count" id="breath-count"></div>
+    </div>
+    <p class="breath-cue" id="breath-cue">breathe in&hellip;</p>
+    <div style="height:10px"></div>
+    <button class="ghost" id="skip-breathe">skip &mdash; I&rsquo;m ready</button>
+  </section>
+
+  <!-- SCREEN 3 : the quiet chat -->
+  <section id="screen-chat" class="screen">
+    <p class="kicker">SOMEONE&rsquo;S AWAKE WITH YOU</p>
+    <div class="chat" id="chat"></div>
+    <div id="chat-actions">
+      <button class="primary" id="to-verse" style="width:100%">I&rsquo;m steadier now</button>
+      <button class="ghost" id="skip-chat" style="width:100%">show me the rest</button>
+    </div>
+  </section>
+
+  <!-- SCREEN 4 : the verse to hold -->
+  <section id="screen-verse" class="screen">
+    <p class="kicker">UNTIL MORNING</p>
+    <div class="keep-card">
+      <b>Keep this screen open</b> if you want.<br>
+      One verse. Hold it until the sun comes up.
+    </div>
+    <div class="verse-card">
+      <p class="verse">In peace I will lie down and sleep, for you alone, Lord, make me dwell in safety.</p>
+      <p class="ref">Psalm 4:8 &middot; NIV</p>
+    </div>
+    <div class="crisis">
+      <b>If it gets worse tonight:</b> call or text <a href="tel:988">988</a>.
+      Free, confidential, 24/7. Reaching out is strength, not weakness.
+    </div>
+    <div style="height:18px"></div>
+    <button class="primary" id="breathe-again">Breathe with me again</button>
+    <button class="ghost" id="start-over">Start over</button>
+  </section>
+
+  <footer>A Twlv2 Well experiment &middot; prototype</footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var $ = function(id){ return document.getElementById(id); };
+
+  /* ---------- stars on the landing moon ---------- */
+  (function(){
+    var wrap = $("moon-wrap");
+    var spots = [[12,18],[80,12],[24,72],[68,80],[44,8],[90,48],[6,52],[52,88]];
+    for (var i = 0; i < spots.length; i++){
+      var s = document.createElement("div");
+      s.className = "star";
+      var sz = (i % 3) + 2;
+      s.style.width = sz + "px"; s.style.height = sz + "px";
+      s.style.left = spots[i][0] + "%"; s.style.top = spots[i][1] + "%";
+      s.style.animationDelay = (i * 0.45) + "s";
+      wrap.appendChild(s);
+    }
+  })();
+
+  function show(id){
+    var screens = document.querySelectorAll(".screen");
+    for (var i = 0; i < screens.length; i++) screens[i].classList.remove("active");
+    $(id).classList.add("active");
+    window.scrollTo(0, 0);
+  }
+
+  /* ---------- screen 2 : breathing ----------
+     5 rounds x (4s in + 2s hold + 6s out) = 60s total.
+     rAF-driven circle scale; JS state machine for cues. */
+  var BREATH_ROUNDS = 5, IN = 4, HOLD = 2, OUT = 6;
+  var CYCLE = IN + HOLD + OUT;
+  var TOTAL = BREATH_ROUNDS * CYCLE;
+  var breathRAF = null, breathTimer = null, breathStart = 0, breathPhase = -1;
+
+  function ease(t){ return t < 0.5 ? 2*t*t : -1 + (4 - 2*t)*t; }
+
+  function breathLoop(){
+    var t = (Date.now() - breathStart) / 1000;
+    if (t >= TOTAL){ endBreathe(); return; }
+
+    var round = Math.floor(t / CYCLE) + 1;
+    var rt = t % CYCLE;
+    var scale = 1, cue = "", count = "";
+
+    if (rt < IN){
+      var p = rt / IN;
+      scale = 1 + ease(p) * 0.9;
+      cue = "breathe in&hellip;"; count = Math.ceil(IN - rt);
+    } else if (rt < IN + HOLD){
+      scale = 1.9;
+      cue = "hold&hellip;"; count = "";
+    } else {
+      var q = (rt - IN - HOLD) / OUT;
+      scale = 1.9 - ease(q) * 0.9;
+      cue = "breathe out&hellip;"; count = Math.ceil(OUT - (rt - IN - HOLD));
+    }
+
+    $("breath-circle").style.transform = "scale(" + scale.toFixed(3) + ")";
+    var cueEl = $("breath-cue");
+    if (cueEl.innerHTML !== cue) cueEl.innerHTML = cue;
+    var countEl = $("breath-count");
+    var cs = count === "" ? "" : String(count);
+    if (countEl.textContent !== cs) countEl.textContent = cs;
+    $("progress-fill").style.width = ((t / TOTAL) * 100).toFixed(1) + "%";
+    var lbl = "ROUND " + round + " OF " + BREATH_ROUNDS;
+    if ($("progress-label").textContent !== lbl) $("progress-label").textContent = lbl;
+
+    breathRAF = requestAnimationFrame(breathLoop);
+  }
+
+  function stopBreathTimers(){
+    if (breathRAF){ cancelAnimationFrame(breathRAF); breathRAF = null; }
+    if (breathTimer){ clearTimeout(breathTimer); breathTimer = null; }
+  }
+
+  function startBreathing(){
+    stopBreathTimers();
+    breathStart = Date.now(); breathPhase = -1;
+    $("breath-cue").innerHTML = "breathe in&hellip;";
+    $("breath-count").textContent = "";
+    $("progress-fill").style.width = "0%";
+    $("progress-label").textContent = "ROUND 1 OF " + BREATH_ROUNDS;
+    show("screen-breathe");
+    breathLoop();
+    breathTimer = setTimeout(endBreathe, TOTAL * 1000 + 300);
+  }
+
+  function endBreathe(){
+    stopBreathTimers();
+    startChat();
+  }
+
+  /* ---------- screen 3 : the quiet chat ---------- */
+  var LINES = [
+    "Hey. I see you\u2019re up. That takes guts, showing up here instead of just spiraling alone.",
+    "Here\u2019s the thing about 3am: everything feels bigger than it is. The dark does that. It lies.",
+    "Your heart is racing, your thoughts are loud \u2014 but you are still here, still breathing. That counts.",
+    "There\u2019s an old line for nights like this: \u201Cby day the Lord directs his love, and by night his song is with me.\u201D (Psalm 42:8) Even \u2014 especially \u2014 at 3am, He\u2019s not asleep.",
+    "You don\u2019t have to solve tonight. You just have to get through it. One slow breath at a time.",
+    "So here\u2019s your job until morning: rest. I\u2019ve got a verse for you to hold."
+  ];
+  var chatTimers = [];
+  var chatRunning = false;
+
+  function addMsg(text){
+    var chat = $("chat");
+    var d = document.createElement("div");
+    d.className = "msg awake";
+    var p = document.createElement("div");
+    p.textContent = text;
+    d.appendChild(p);
+    var t = document.createElement("span");
+    t.className = "t";
+    t.textContent = "awake with you";
+    d.appendChild(t);
+    chat.appendChild(d);
+    chat.scrollTop = chat.scrollHeight;
+  }
+
+  function showTyping(){
+    var chat = $("chat");
+    var d = document.createElement("div");
+    d.className = "typing"; d.id = "typing-dots";
+    for (var i = 0; i < 3; i++) d.appendChild(document.createElement("span"));
+    chat.appendChild(d);
+    chat.scrollTop = chat.scrollHeight;
+  }
+
+  function hideTyping(){
+    var t = $("typing-dots");
+    if (t && t.parentNode) t.parentNode.removeChild(t);
+  }
+
+  function clearChatTimers(){
+    for (var i = 0; i < chatTimers.length; i++) clearTimeout(chatTimers[i]);
+    chatTimers = [];
+  }
+
+  function resetChat(){
+    clearChatTimers();
+    hideTyping();
+    $("chat").innerHTML = "";
+    $("chat-actions").classList.remove("show");
+    chatRunning = false;
+  }
+
+  function revealAll(){
+    clearChatTimers();
+    hideTyping();
+    for (var i = 0; i < LINES.length; i++){
+      var found = false, nodes = $("chat").childNodes, j;
+      for (j = 0; j < nodes.length; j++){
+        if (nodes[j].nodeType === 1 && nodes[j].firstChild &&
+            nodes[j].firstChild.textContent === LINES[i]){ found = true; break; }
+      }
+      if (!found) addMsg(LINES[i]);
+    }
+    $("chat-actions").classList.add("show");
+    chatRunning = false;
+  }
+
+  function startChat(){
+    resetChat();
+    show("screen-chat");
+    chatRunning = true;
+    var delay = 900;
+    for (var i = 0; i < LINES.length; i++){
+      (function(idx, at){
+        chatTimers.push(setTimeout(function(){
+          if (!chatRunning) return;
+          showTyping();
+          chatTimers.push(setTimeout(function(){
+            if (!chatRunning) return;
+            hideTyping();
+            addMsg(LINES[idx]);
+            if (idx === LINES.length - 1){
+              chatTimers.push(setTimeout(function(){
+                if (!chatRunning) return;
+                $("chat-actions").classList.add("show");
+                chatRunning = false;
+              }, 1600));
+            }
+          }, 1300));
+        }, at));
+      })(i, delay);
+      delay += 1300 + 2300; /* typing + reading pause */
+    }
+  }
+
+  /* ---------- wiring ---------- */
+  $("begin").addEventListener("click", startBreathing);
+  $("go-chat").addEventListener("click", function(){ stopBreathTimers(); startChat(); });
+  $("skip-breathe").addEventListener("click", endBreathe);
+  $("to-verse").addEventListener("click", function(){ show("screen-verse"); });
+  $("skip-chat").addEventListener("click", revealAll);
+  $("breathe-again").addEventListener("click", startBreathing);
+  $("start-over").addEventListener("click", function(){ resetChat(); show("screen-landing"); });
+})();
+</script>
+</body>
+</html>

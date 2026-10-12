@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#1B1A1A">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Noto+Serif:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<title>The Well — The Forgiveness Letter</title>
+<style>
+    :root{
+    --ink:#1B1A1A;
+    --ink2:#262524;
+    --accent:#FD5200;
+    --accent-soft:#ff6a1f;
+    --paper:#F5F2EB;
+    --muted:#CFC8C8;
+    --card:rgba(255,255,255,.045);
+    --line:rgba(253,82,0,.28);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:'Montserrat',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    background:radial-gradient(120% 90% at 50% 0%, #2b2826 0%, var(--ink) 55%, #0e0d0c 100%);
+    color:var(--paper);
+    min-height:100dvh;
+    display:flex;justify-content:center;
+    -webkit-font-smoothing:antialiased;
+  }
+  .app{
+    width:100%;max-width:430px;min-height:100dvh;
+    display:flex;flex-direction:column;
+    padding:28px 24px calc(20px + env(safe-area-inset-bottom));
+    position:relative;
+  }
+  .screen{display:none;flex-direction:column;flex:1;animation:rise .5s ease both}
+  .screen.active{display:flex}
+  @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+  h1{
+    text-align:center;font-weight:700;letter-spacing:.42em;text-indent:.42em;
+    font-size:21px;color:var(--accent-soft);margin-bottom:10px;
+  }
+  .tagline{text-align:center;color:var(--muted);font-size:13.5px;letter-spacing:.06em;margin-bottom:26px}
+  .kicker{
+    text-align:center;color:var(--accent);font-size:12px;font-weight:700;
+    letter-spacing:.32em;text-indent:.32em;margin:8px 0 12px;
+  }
+  .ask{
+    font-family:'Noto Serif',Georgia,serif;font-size:22px;line-height:1.45;
+    text-align:center;margin-bottom:18px;color:var(--paper);
+  }
+  .sub{text-align:center;color:var(--muted);font-size:14.5px;line-height:1.65;margin-bottom:22px;padding:0 8px}
+  .sub b{color:var(--accent-soft);font-weight:600}
+
+  /* ---------- candle mark ---------- */
+  .flame-wrap{position:relative;height:130px;display:flex;align-items:flex-end;justify-content:center;margin:4px 0 10px}
+  .candle{width:26px;height:72px;border-radius:6px;background:linear-gradient(180deg,#e9dfc8,#cfc3a6);position:relative}
+  .flame{
+    position:absolute;top:-34px;left:50%;margin-left:-9px;width:18px;height:30px;
+    background:radial-gradient(circle at 50% 75%, #fff6d8 0%, #ffd27a 38%, #ff9d4d 68%, rgba(255,110,60,0) 100%);
+    border-radius:50% 50% 50% 50%/62% 62% 38% 38%;
+    transform-origin:50% 100%;
+    animation:flick 1.8s ease-in-out infinite;
+    box-shadow:0 0 26px 8px rgba(255,170,80,.35);
+  }
+  @keyframes flick{0%,100%{transform:scale(1) rotate(-2deg)}30%{transform:scale(1.06,1.12) rotate(2deg)}60%{transform:scale(.96,.94) rotate(-1deg)}}
+  .glow{position:absolute;top:-64px;width:120px;height:120px;border-radius:50%;
+    background:radial-gradient(circle,rgba(255,190,100,.14),rgba(255,190,100,0) 70%);}
+
+  /* ---------- chips ---------- */
+  .chips{display:flex;flex-direction:column;gap:12px;margin-bottom:8px}
+  .chip{
+    background:var(--card);border:1px solid rgba(255,255,255,.14);
+    color:var(--paper);border-radius:14px;padding:17px;font-size:16.5px;font-weight:600;
+    text-align:left;letter-spacing:.01em;
+  }
+  .chip:hover{border-color:var(--accent);filter:brightness(1.08)}
+  .chip .go{float:right;color:var(--accent-soft);font-weight:400}
+
+  /* ---------- prompt ---------- */
+  textarea{
+    width:100%;min-height:150px;resize:vertical;
+    background:var(--card);border:1px solid rgba(255,255,255,.12);border-radius:14px;
+    color:var(--paper);font-size:16px;line-height:1.55;padding:16px;
+    outline:none;transition:border .2s, box-shadow .2s;
+  }
+  textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(253,82,0,.15)}
+  textarea::placeholder{color:#8a8484}
+  .rowline{display:flex;justify-content:space-between;align-items:center;margin-top:14px}
+  .skip{background:none;color:var(--muted);font-size:14.5px;font-weight:600;padding:10px 4px;text-decoration:underline;text-underline-offset:3px}
+  .back{background:none;color:var(--muted);font-size:14.5px;font-weight:600;padding:10px 4px}
+  button{
+    font:inherit;cursor:pointer;border:none;border-radius:14px;
+    padding:16px;font-size:16.5px;font-weight:700;letter-spacing:.02em;
+    transition:transform .12s, filter .2s;
+  }
+  button:active{transform:scale(.985)}
+  .primary{
+    background:var(--accent);
+    color:#fff;margin-top:8px;width:100%;
+    box-shadow:0 8px 28px rgba(253,82,0,.28);
+  }
+  .primary:hover{filter:brightness(1.06)}
+  .ghost{
+    background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,.14);
+    margin-top:12px;font-weight:600;font-size:15px;width:100%;
+  }
+  .ghost:hover{color:var(--paper);border-color:var(--accent)}
+  .privacy{
+    text-align:center;color:var(--muted);font-size:12.5px;line-height:1.6;
+    margin-top:22px;padding:0 8px;
+  }
+  .privacy b{color:var(--accent-soft);font-weight:600}
+
+  /* ---------- the letter ---------- */
+  .letter{
+    background:linear-gradient(175deg,#f7f2e4 0%,#f1e9d3 100%);
+    color:#2c2417;border-radius:8px;padding:28px 24px 26px;
+    box-shadow:0 14px 40px rgba(0,0,0,.45), inset 0 0 60px rgba(180,150,90,.12);
+    font-family:'Noto Serif',Georgia,serif;
+    margin:6px 0 20px;position:relative;
+  }
+  .letter::before{
+    content:"";position:absolute;top:0;left:34px;bottom:0;width:1px;background:rgba(200,120,90,.28);
+  }
+  .lsal{font-size:18px;font-weight:700;margin-bottom:14px;padding-left:14px}
+  .lpara{font-size:16.5px;line-height:1.75;margin-bottom:14px;padding-left:14px;white-space:normal}
+  .lsign{text-align:right;font-style:italic;color:#6b5f45;font-size:15px;padding-left:14px;margin-top:6px}
+  .rituals{display:flex;flex-direction:column;gap:0}
+  .burn-btn{color:#e8a08a;border-color:rgba(220,120,100,.35)}
+  .burn-btn:hover{color:#ffd9cd;border-color:#c0564f}
+  .wholine{text-align:center;color:var(--muted);font-size:13px;margin:14px 0 4px;font-style:italic}
+
+  /* ---------- ritual stage ---------- */
+  .stage{flex:1;display:flex;flex-direction:column;justify-content:center;position:relative;min-height:340px}
+  #ritualLetter{transition:opacity 2.8s ease, transform 2.8s ease}
+  #ritualLetter.releasing{opacity:0;transform:translateY(-90px) scale(.96)}
+  #ritualLetter.burning{animation:burnLetter 3.2s ease-in forwards}
+  @keyframes burnLetter{
+    0%{filter:none;opacity:1;transform:none}
+    35%{filter:brightness(.6) sepia(.7) saturate(2.2) hue-rotate(-18deg)}
+    65%{filter:brightness(.32) grayscale(.45);opacity:.9;transform:scale(.985)}
+    100%{filter:brightness(.14) grayscale(.75);opacity:0;transform:scale(.96) translateY(16px)}
+  }
+  .ember,.mote{position:absolute;bottom:10px;border-radius:50%;pointer-events:none;z-index:5}
+  .ember{animation:emberRise linear forwards}
+  @keyframes emberRise{
+    0%{transform:translate(0,0) scale(1);opacity:1}
+    100%{transform:translate(var(--dx,20px),-250px) scale(.2);opacity:0}
+  }
+  .mote{
+    width:7px;height:7px;
+    background:radial-gradient(circle,rgba(253,82,0,.95),rgba(253,82,0,0) 70%);
+    animation:moteRise linear forwards;
+  }
+  @keyframes moteRise{
+    0%{transform:translateY(0);opacity:0}
+    25%{opacity:.9}
+    100%{transform:translateY(-170px);opacity:0}
+  }
+  .ashes{
+    text-align:center;color:var(--muted);font-size:14px;font-style:italic;
+    animation:rise 1.6s ease both;margin-top:6px;
+  }
+
+  /* ---------- envelope ---------- */
+  .envelope{width:230px;height:156px;margin:10px auto 8px;position:relative;perspective:600px}
+  .env-body{
+    position:absolute;inset:0;border-radius:10px;
+    background:linear-gradient(180deg,#262524,#1B1A1A);
+    border:1px solid var(--line);
+    box-shadow:0 14px 40px rgba(0,0,0,.5);
+  }
+  .env-flap{
+    position:absolute;top:0;left:5%;right:5%;height:80px;
+    background:linear-gradient(180deg,#2b2826,#262524);
+    clip-path:polygon(0 0,100% 0,50% 100%);
+    transform-origin:top center;transform:rotateX(-72deg);
+    transition:transform 1.5s cubic-bezier(.45,.05,.2,1);
+    border-top:1px solid var(--line);
+  }
+  .envelope.sealed .env-flap{transform:rotateX(0deg)}
+  .seal-dot{
+    position:absolute;top:64px;left:50%;margin-left:-22px;width:44px;height:44px;border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, var(--accent-soft), var(--accent) 70%, #4a2410);
+    color:#fff;font-size:11px;font-weight:800;letter-spacing:.05em;
+    display:flex;align-items:center;justify-content:center;
+    opacity:0;transform:scale(.4);transition:opacity .8s ease .9s, transform .8s ease .9s;
+    box-shadow:0 4px 14px rgba(0,0,0,.5);
+  }
+  .envelope.sealed .seal-dot{opacity:1;transform:scale(1)}
+
+  /* ---------- ritual result ---------- */
+  .verse-card{
+    background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:22px 20px;margin:18px 0 8px;position:relative;overflow:hidden;
+    animation:rise 1.2s ease both;
+  }
+  .verse-card::before{
+    content:"\201C";position:absolute;top:2px;left:14px;
+    font-family:'Noto Serif',Georgia,serif;font-size:64px;color:rgba(253,82,0,.16);line-height:1;
+  }
+  .verse{font-family:'Noto Serif',Georgia,serif;font-size:18.5px;line-height:1.65;margin-bottom:12px;position:relative}
+  .ref{text-align:right;color:var(--accent-soft);font-size:13.5px;letter-spacing:.08em;font-weight:600}
+  .verdict{
+    text-align:center;font-family:'Noto Serif',Georgia,serif;font-size:24px;color:var(--accent-soft);
+    margin:14px 0 6px;animation:rise 1.4s ease both;
+  }
+  .verdict-sub{text-align:center;color:var(--muted);font-size:14.5px;line-height:1.65;padding:0 10px;animation:rise 1.6s ease both}
+  .honest{
+    text-align:center;color:#8a8484;font-size:12px;font-style:italic;line-height:1.6;
+    margin-top:14px;padding:0 16px;animation:rise 1.8s ease both;
+  }
+
+  /* ---------- closing ---------- */
+  .close-mark{font-size:44px;text-align:center;margin:30px 0 8px}
+  footer{
+    margin-top:auto;padding-top:26px;text-align:center;
+    color:#8a8484;font-size:11.5px;letter-spacing:.06em;line-height:1.7;
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- SCREEN 1 : landing -->
+  <section id="screen-home" class="screen active">
+    <div class="flame-wrap"><div class="glow"></div><div class="candle"><div class="flame"></div></div></div>
+    <p class="kicker">THE WELL &middot; NO. 8</p>
+    <h1 style="font-size:19px">THE FORGIVENESS LETTER</h1>
+    <p class="ask" style="margin-top:14px">Write the letter<br>you&rsquo;ll never send.</p>
+    <p class="sub">To the parent, the ex, the friend &mdash; <b>or to yourself.</b><br>
+    Three honest prompts. Then release it, seal it, or burn it.<br>No one ever reads it but you and God.</p>
+    <button class="primary" id="begin">Write the letter</button>
+    <p class="privacy"><b>Nothing you write leaves this page.</b><br>No account. No history. No one will ever know you were here.</p>
+  </section>
+
+  <!-- SCREEN 2 : who is it for -->
+  <section id="screen-who" class="screen">
+    <p class="kicker">STEP ONE</p>
+    <p class="ask">Who is this letter for?</p>
+    <p class="sub">Tap one. This stays between you and the page.</p>
+    <div class="chips" id="chips">
+      <button class="chip" data-i="0">A parent <span class="go">&rsaquo;</span></button>
+      <button class="chip" data-i="1">An ex <span class="go">&rsaquo;</span></button>
+      <button class="chip" data-i="2">A friend <span class="go">&rsaquo;</span></button>
+      <button class="chip" data-i="3">Myself <span class="go">&rsaquo;</span></button>
+      <button class="chip" data-i="4">Someone else <span class="go">&rsaquo;</span></button>
+    </div>
+    <button class="ghost" id="whoBack" style="width:auto;align-self:center;padding:12px 22px">&larr; Back</button>
+  </section>
+
+  <!-- SCREEN 3 : guided prompts (reused x3) -->
+  <section id="screen-prompt" class="screen">
+    <p class="kicker" id="stepKicker">STEP 2 OF 4</p>
+    <p class="ask" id="promptQ"></p>
+    <textarea id="promptA" aria-label="Your answer"></textarea>
+    <button class="primary" id="promptNext">Continue</button>
+    <div class="rowline">
+      <button class="back" id="promptBack">&larr; Back</button>
+      <button class="skip" id="promptSkip">skip this step &rarr;</button>
+    </div>
+  </section>
+
+  <!-- SCREEN 4 : the letter -->
+  <section id="screen-letter" class="screen">
+    <p class="kicker">YOUR LETTER</p>
+    <div class="letter" id="letterView"></div>
+    <p class="wholine">&ldquo;No one ever reads it but you and God.&rdquo;</p>
+    <p class="kicker" style="margin-top:10px">WHAT NOW?</p>
+    <div class="rituals">
+      <button class="primary" id="doRelease">Release it</button>
+      <button class="ghost" id="doSeal">Seal it for 30 days</button>
+      <button class="ghost burn-btn" id="doBurn">Burn it</button>
+    </div>
+    <button class="ghost" id="rewrite" style="width:auto;align-self:center;padding:12px 22px">Start over</button>
+  </section>
+
+  <!-- SCREEN 5 : the ritual -->
+  <section id="screen-ritual" class="screen">
+    <div class="stage" id="stage"></div>
+    <div id="ritualResult" style="display:none;flex-direction:column;flex:1"></div>
+  </section>
+
+  <!-- SCREEN 6 : quiet close -->
+  <section id="screen-close" class="screen" style="justify-content:center;text-align:center">
+    <div class="close-mark">&#10024;</div>
+    <p class="kicker">IT&rsquo;S DONE</p>
+    <p class="ask">The letter is gone.<br>The freedom stays.</p>
+    <p class="sub">Whatever you carried in is lighter now.<br>Walk gently with yourself today.</p>
+    <button class="ghost" id="closeReturn" style="margin-top:10px">Return to the well</button>
+    <p class="privacy">Your letter was never saved &mdash;<br>it only ever lived on this screen.</p>
+  </section>
+
+  <footer>A Twlv2 Well experiment &middot; prototype<br>Everything runs on this page &mdash; nothing is sent or stored anywhere.</footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var $ = function(id){ return document.getElementById(id); };
+
+  function esc(s){
+    return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;")
+      .replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+  }
+  function show(id){
+    var screens = document.querySelectorAll(".screen");
+    for (var i = 0; i < screens.length; i++) screens[i].classList.remove("active");
+    $(id).classList.add("active");
+    window.scrollTo(0, 0);
+  }
+
+  var WHO = [
+    { label:"A parent",     greet:"Dear Mom and Dad," },
+    { label:"An ex",        greet:"Dear you," },
+    { label:"A friend",     greet:"Dear friend," },
+    { label:"Myself",       greet:"Dear me," },
+    { label:"Someone else", greet:"Dear you," }
+  ];
+  var PROMPTS = [
+    { q:"What happened \u2014 in your honest words.",
+      ph:"No polishing. Just what happened, the way you\u2019d tell it at 2 a.m.\u2026" },
+    { q:"What did it cost you?",
+      ph:"Time, trust, peace, years\u2026 name the real price." },
+    { q:"What do you need to say that was never said?",
+      ph:"The sentence you rehearsed a hundred times and never spoke." }
+  ];
+  var VERSES = {
+    release:{
+      text:"Be kind and compassionate to one another, forgiving each other, just as in Christ God forgave you.",
+      ref:"Ephesians 4:32",
+      verdict:"It\u2019s released.",
+      sub:"What you forgave no longer gets to hold you."
+    },
+    seal:{
+      text:"Bear with each other and forgive one another if any of you has a grievance against someone. Forgive as the Lord forgave you.",
+      ref:"Colossians 3:13",
+      verdict:"It\u2019s sealed.",
+      sub:"Sealed for 30 days. The Well will hold it \u2014 and so will heaven."
+    },
+    burn:{
+      text:"As far as the east is from the west, so far has he removed our transgressions from us.",
+      ref:"Psalm 103:12",
+      verdict:"It\u2019s burned.",
+      sub:"What was written in pain doesn\u2019t have to live in you."
+    }
+  };
+
+  var who = null;              /* index into WHO */
+  var step = 0;                /* 0..2 prompt step */
+  var answers = ["", "", ""];  /* the three answers */
+
+  /* ---------- composition ---------- */
+  function letterHTML(){
+    var g = who === null ? "Dear you," : WHO[who].greet;
+    var html = '<p class="lsal">' + esc(g) + "</p>";
+    var paras = [];
+    for (var i = 0; i < answers.length; i++){
+      var t = answers[i].trim();
+      if (t) paras.push(t);
+    }
+    if (!paras.length){
+      html += '<p class="lpara">You sat down to write \u2014 and sometimes showing up is the whole letter. It\u2019s still yours to release.</p>';
+    } else {
+      for (var j = 0; j < paras.length; j++){
+        html += '<p class="lpara">' + esc(paras[j]).replace(/\n/g, "<br>") + "</p>";
+      }
+    }
+    html += '<p class="lsign">\u2014 never sent, finally said</p>';
+    return html;
+  }
+
+  /* ---------- private-content cleanup: never persist, never linger ---------- */
+  function clearPrivate(){
+    answers = ["", "", ""];
+    who = null;
+    var ta = $("promptA"); if (ta) ta.value = "";
+    var lv = $("letterView"); if (lv) lv.innerHTML = "";
+    var st = $("stage"); if (st) st.innerHTML = "";
+    var rr = $("ritualResult"); if (rr) rr.innerHTML = "";
+  }
+  function reset(){
+    clearPrivate();
+    step = 0;
+    show("screen-home");
+  }
+
+  /* ---------- flow ---------- */
+  $("begin").addEventListener("click", function(){ show("screen-who"); });
+  $("whoBack").addEventListener("click", function(){ show("screen-home"); });
+
+  var chips = document.querySelectorAll("#chips .chip");
+  for (var c = 0; c < chips.length; c++){
+    chips[c].addEventListener("click", function(){
+      who = parseInt(this.getAttribute("data-i"), 10);
+      step = 0;
+      renderPrompt();
+    });
+  }
+
+  function renderPrompt(){
+    $("stepKicker").textContent = "STEP " + (step + 2) + " OF 4";
+    $("promptQ").textContent = PROMPTS[step].q;
+    var ta = $("promptA");
+    ta.value = answers[step] || "";
+    ta.placeholder = PROMPTS[step].ph;
+    show("screen-prompt");
+    setTimeout(function(){ ta.focus(); }, 350);
+  }
+  $("promptNext").addEventListener("click", function(){
+    answers[step] = $("promptA").value;
+    if (step < 2){ step++; renderPrompt(); }
+    else { showLetter(); }
+  });
+  $("promptSkip").addEventListener("click", function(){
+    answers[step] = "";
+    if (step < 2){ step++; renderPrompt(); }
+    else { showLetter(); }
+  });
+  $("promptBack").addEventListener("click", function(){
+    answers[step] = $("promptA").value;
+    if (step > 0){ step--; renderPrompt(); }
+    else { show("screen-who"); }
+  });
+
+  function showLetter(){
+    $("letterView").innerHTML = letterHTML();
+    show("screen-letter");
+  }
+  $("rewrite").addEventListener("click", function(){
+    answers = ["", "", ""];
+    step = 0;
+    renderPrompt();
+  });
+
+  /* ---------- ritual plumbing ---------- */
+  function openRitual(){
+    var st = $("stage");
+    st.style.display = "flex";
+    st.innerHTML = "";
+    var rr = $("ritualResult");
+    rr.style.display = "none";
+    rr.innerHTML = "";
+    show("screen-ritual");
+  }
+  function finishRitual(kind){
+    var v = VERSES[kind];
+    var st = $("stage");
+    st.innerHTML = "";            /* letter remnant leaves the DOM here */
+    st.style.display = "none";
+    var rr = $("ritualResult");
+    rr.style.display = "flex";
+    var html = '<p class="verdict">' + esc(v.verdict) + "</p>"
+      + '<div class="verse-card"><p class="verse">' + esc(v.text) + "</p>"
+      + '<p class="ref">' + esc(v.ref) + " \u00B7 NIV</p></div>"
+      + '<p class="verdict-sub">' + esc(v.sub) + "</p>";
+    if (kind === "seal"){
+      html += '<p class="honest">Prototype honesty: nothing was actually stored \u2014 it\u2019s sealed here, in this moment.</p>';
+    } else if (kind === "burn"){
+      html += '<p class="honest">Nothing remains. Not on a server, not on this page.</p>';
+    } else {
+      html += '<p class="honest">It rose, and it\u2019s gone. Not on a server, not on this page.</p>';
+    }
+    html += '<button class="primary" id="restBtn" style="margin-top:22px">Breathe easy</button>';
+    rr.innerHTML = html;
+    $("restBtn").addEventListener("click", function(){
+      clearPrivate();
+      show("screen-close");
+    });
+  }
+
+  function spawnParticles(container, count, cls){
+    for (var i = 0; i < count; i++){
+      var p = document.createElement("span");
+      p.className = cls;
+      p.style.left = (Math.random() * 96) + "%";
+      if (cls === "ember"){
+        var s = 3 + Math.random() * 5;
+        p.style.width = p.style.height = s + "px";
+        p.style.background = ["#ffd27a", "#ff9d4d", "#ff6b3d"][i % 3];
+        p.style.setProperty("--dx", (Math.random() * 90 - 45).toFixed(0) + "px");
+        p.style.animationDuration = (1.5 + Math.random() * 1.8).toFixed(2) + "s";
+        p.style.animationDelay = (Math.random() * 2.1).toFixed(2) + "s";
+      } else {
+        var m = 5 + Math.random() * 6;
+        p.style.width = p.style.height = m + "px";
+        p.style.animationDuration = (2.2 + Math.random() * 1.6).toFixed(2) + "s";
+        p.style.animationDelay = (Math.random() * 1.4).toFixed(2) + "s";
+      }
+      container.appendChild(p);
+    }
+  }
+
+  /* ----- RELEASE: the letter rises and fades ----- */
+  $("doRelease").addEventListener("click", function(){
+    openRitual();
+    var st = $("stage");
+    var letter = document.createElement("div");
+    letter.className = "letter";
+    letter.id = "ritualLetter";
+    letter.innerHTML = letterHTML();
+    st.appendChild(letter);
+    spawnParticles(st, 16, "mote");
+    /* trigger the fade on the next frame so the transition runs */
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){ letter.classList.add("releasing"); });
+    });
+    setTimeout(function(){ finishRitual("release"); }, 3400);
+  });
+
+  /* ----- SEAL: envelope flap closes ----- */
+  $("doSeal").addEventListener("click", function(){
+    openRitual();
+    var st = $("stage");
+    var env = document.createElement("div");
+    env.className = "envelope";
+    env.setAttribute("aria-label", "A sealed envelope");
+    env.innerHTML = '<div class="env-body"></div><div class="env-flap"></div>'
+      + '<div class="seal-dot">30</div>';
+    st.appendChild(env);
+    var cap = document.createElement("p");
+    cap.className = "ashes";
+    cap.textContent = "Folding the letter away\u2026";
+    st.appendChild(cap);
+    setTimeout(function(){ env.classList.add("sealed"); }, 450);
+    setTimeout(function(){ finishRitual("seal"); }, 2900);
+  });
+
+  /* ----- BURN: embers rise, letter chars to ash ----- */
+  $("doBurn").addEventListener("click", function(){
+    openRitual();
+    var st = $("stage");
+    var wrap = document.createElement("div");
+    wrap.style.position = "relative";
+    var letter = document.createElement("div");
+    letter.className = "letter";
+    letter.id = "ritualLetter";
+    letter.innerHTML = letterHTML();
+    wrap.appendChild(letter);
+    st.appendChild(wrap);
+    spawnParticles(wrap, 46, "ember");
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){ letter.classList.add("burning"); });
+    });
+    var cap = document.createElement("p");
+    cap.className = "ashes";
+    cap.style.marginTop = "14px";
+    st.appendChild(cap);
+    setTimeout(function(){ cap.textContent = "Only ashes remain."; }, 2400);
+    setTimeout(function(){ finishRitual("burn"); }, 3800);
+  });
+
+  $("closeReturn").addEventListener("click", reset);
+})();
+</script>
+</body>
+</html>
