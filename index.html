@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0b1020">
+<title>The Well — Anonymous Prayer</title>
+<style>
+  :root{
+    --ink:#0b1020;
+    --ink2:#101830;
+    --gold:#d9a94f;
+    --gold-soft:#e8c57c;
+    --paper:#f4efe4;
+    --muted:#9aa3b8;
+    --card:rgba(255,255,255,.045);
+    --line:rgba(217,169,79,.28);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:radial-gradient(120% 90% at 50% 0%, #16224a 0%, var(--ink) 55%, #060913 100%);
+    color:var(--paper);
+    min-height:100dvh;
+    display:flex;justify-content:center;
+    -webkit-font-smoothing:antialiased;
+  }
+  .app{
+    width:100%;max-width:430px;min-height:100dvh;
+    display:flex;flex-direction:column;
+    padding:28px 24px calc(20px + env(safe-area-inset-bottom));
+    position:relative;
+  }
+  .screen{display:none;flex-direction:column;flex:1;animation:rise .5s ease both}
+  .screen.active{display:flex}
+  @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+  /* ---------- landing ---------- */
+  .ripple-wrap{position:relative;height:150px;margin:6px 0 2px;display:flex;align-items:center;justify-content:center}
+  .ripple{position:absolute;border:1px solid var(--line);border-radius:50%;animation:ripple 4.5s ease-out infinite}
+  .ripple.r1{width:56px;height:56px}
+  .ripple.r2{width:56px;height:56px;animation-delay:1.5s}
+  .ripple.r3{width:56px;height:56px;animation-delay:3s}
+  @keyframes ripple{0%{transform:scale(.4);opacity:.9}100%{transform:scale(2.6);opacity:0}}
+  .well-dot{
+    width:56px;height:56px;border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, #2b3c74 0%, #141c3d 60%, #0a0f24 100%);
+    border:1px solid var(--line);
+    box-shadow:0 0 42px rgba(217,169,79,.22), inset 0 0 18px rgba(0,0,0,.6);
+  }
+  h1{
+    text-align:center;font-weight:700;letter-spacing:.42em;text-indent:.42em;
+    font-size:21px;color:var(--gold-soft);margin-bottom:10px;
+  }
+  .tagline{text-align:center;color:var(--muted);font-size:13.5px;letter-spacing:.06em;margin-bottom:26px}
+  .ask{
+    font-family:Georgia,"Times New Roman",serif;font-size:22px;line-height:1.45;
+    text-align:center;margin-bottom:18px;color:var(--paper);
+  }
+  textarea{
+    width:100%;min-height:132px;resize:vertical;
+    background:var(--card);border:1px solid rgba(255,255,255,.12);border-radius:14px;
+    color:var(--paper);font-size:16px;line-height:1.55;padding:16px;
+    outline:none;transition:border .2s, box-shadow .2s;
+  }
+  textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(217,169,79,.15)}
+  textarea::placeholder{color:#5d6680}
+  textarea.shake{animation:shake .35s}
+  @keyframes shake{0%,100%{transform:none}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+  .hint{min-height:22px;text-align:center;color:var(--gold-soft);font-size:13px;margin:10px 0 4px}
+  button{
+    font:inherit;cursor:pointer;border:none;border-radius:14px;
+    padding:16px;font-size:16.5px;font-weight:700;letter-spacing:.02em;
+    transition:transform .12s, filter .2s;
+  }
+  button:active{transform:scale(.985)}
+  .primary{
+    background:linear-gradient(180deg,var(--gold-soft),var(--gold));
+    color:#241a06;margin-top:8px;
+    box-shadow:0 8px 28px rgba(217,169,79,.25);
+  }
+  .primary:hover{filter:brightness(1.06)}
+  .ghost{
+    background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,.14);
+    margin-top:12px;font-weight:600;font-size:15px;
+  }
+  .privacy{
+    text-align:center;color:var(--muted);font-size:12.5px;line-height:1.6;
+    margin-top:22px;padding:0 8px;
+  }
+  .privacy b{color:var(--gold-soft);font-weight:600}
+
+  /* ---------- result ---------- */
+  .kicker{
+    text-align:center;color:var(--gold);font-size:12px;font-weight:700;
+    letter-spacing:.32em;text-indent:.32em;margin:8px 0 12px;
+  }
+  .brought{
+    text-align:center;color:var(--muted);font-style:italic;
+    font-size:14.5px;line-height:1.6;margin-bottom:20px;padding:0 6px;
+  }
+  .brought span{color:var(--paper)}
+  .verse-card{
+    background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:22px 20px;margin-bottom:26px;position:relative;overflow:hidden;
+  }
+  .verse-card::before{
+    content:"\201C";position:absolute;top:2px;left:14px;
+    font-family:Georgia,serif;font-size:64px;color:rgba(217,169,79,.16);line-height:1;
+  }
+  .verse{
+    font-family:Georgia,"Times New Roman",serif;font-size:18.5px;line-height:1.65;
+    margin-bottom:12px;position:relative;
+  }
+  .ref{text-align:right;color:var(--gold-soft);font-size:13.5px;letter-spacing:.08em;font-weight:600}
+  .prayer{
+    font-size:16px;line-height:1.75;color:#e8e4d8;
+    background:rgba(255,255,255,.03);border-left:3px solid var(--gold);
+    border-radius:0 12px 12px 0;padding:16px 18px;margin-bottom:8px;
+  }
+  .prayer .amen{color:var(--gold-soft);font-weight:700}
+  .crisis{
+    border:1px solid #c0564f;background:rgba(192,86,79,.1);border-radius:12px;
+    padding:14px 16px;margin:14px 0 4px;font-size:14px;line-height:1.6;color:#f0d9d6;
+  }
+  .crisis b{color:#fff}
+  footer{
+    margin-top:auto;padding-top:26px;text-align:center;
+    color:#4d5670;font-size:11.5px;letter-spacing:.06em;line-height:1.7;
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- SCREEN 1 : the ask -->
+  <section id="screen-ask" class="screen active">
+    <div class="ripple-wrap">
+      <div class="ripple r1"></div><div class="ripple r2"></div><div class="ripple r3"></div>
+      <div class="well-dot"></div>
+    </div>
+    <h1>THE WELL</h1>
+    <p class="tagline">One screen. No name. No signup.</p>
+    <p class="ask">What&rsquo;s the thing<br>you&rsquo;d never say out loud?</p>
+    <textarea id="need" placeholder="Type it here — the honest version, not the polished one&hellip;" aria-label="Your unspoken need"></textarea>
+    <p class="hint" id="hint"></p>
+    <button class="primary" id="draw">Draw from the well</button>
+    <p class="privacy"><b>Nothing you type leaves this page.</b><br>No account. No history. No one will ever know you were here.</p>
+  </section>
+
+  <!-- SCREEN 2 : the answer -->
+  <section id="screen-well" class="screen">
+    <p class="kicker">DRAWN FROM THE WELL</p>
+    <p class="brought" id="brought"></p>
+    <div class="verse-card">
+      <p class="verse" id="verse"></p>
+      <p class="ref" id="ref"></p>
+    </div>
+    <p class="kicker">A PRAYER FOR YOU</p>
+    <p class="prayer" id="prayer"></p>
+    <div class="crisis" id="crisis" hidden>
+      <b>If you&rsquo;re thinking about harming yourself, stop and call or text 988 right now.</b>
+      Someone trained and kind is there 24/7. You matter more than this moment.
+    </div>
+    <div style="height:18px"></div>
+    <button class="primary" id="forward">Pray it forward</button>
+    <button class="ghost" id="again">Return to the well</button>
+  </section>
+
+  <!-- SCREEN 3 : pray it forward -->
+  <section id="screen-forward" class="screen" style="justify-content:center;text-align:center">
+    <div class="ripple-wrap" style="height:110px">
+      <div class="ripple r1"></div><div class="ripple r2"></div>
+      <div class="well-dot" style="width:44px;height:44px"></div>
+    </div>
+    <p class="kicker">THE CHAIN CONTINUES</p>
+    <p class="ask" style="font-size:20px">You just covered a stranger.<br>Anonymously.</p>
+    <p class="brought">Somewhere, someone is praying for <span>you</span> too.<br>This is how the well stays full.</p>
+    <button class="ghost" id="again2" style="margin-top:18px">Return to the well</button>
+  </section>
+
+  <footer>A Twlv2 Well experiment &middot; prototype<br>Everything runs on this page &mdash; nothing is sent or stored anywhere.</footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var $ = function(id){ return document.getElementById(id); };
+
+  /* ---------- verse + prayer bank (NIV) ---------- */
+  var BANK = [
+    { keys:["suicide","kill myself","kill me","self-harm","self harm","hurt myself","harm myself","end it all","ending it","end it","want to die","don\u2019t want to live","dont want to live","end my life"],
+      ref:"Psalm 34:18",
+      verse:"The Lord is close to the brokenhearted and saves those who are crushed in spirit.",
+      prayer:"Father, someone is at the edge tonight \u2014 and they came here instead of staying alone with it. Hold them. Let them feel, right now, that they are seen by You and not finished. Put one human in their path today who stays. And let hope \u2014 real, stubborn hope \u2014 find them before morning.",
+      crisis:true },
+    { keys:["anxious","anxiety","worried","worry","fear","afraid","scared","panic","stress","overwhelm","spiraling","spiral"],
+      ref:"Philippians 4:6\u20137",
+      verse:"Do not be anxious about anything, but in every situation, by prayer and petition, with thanksgiving, present your requests to God. And the peace of God, which transcends all understanding, will guard your hearts and your minds in Christ Jesus.",
+      prayer:"Father, their mind won\u2019t stop racing \u2014 so we bring the racing to You. Trade their what-ifs for Your peace, the kind that doesn\u2019t need the situation fixed first. Guard their heart and their thoughts tonight. Teach them to hand You one worry at a time, and let the quiet come." },
+    { keys:["grief","grieving","loss","lost him","lost her","died","death","passed away","mourning","funeral","miss him","miss her"],
+      ref:"Psalm 34:18",
+      verse:"The Lord is close to the brokenhearted and saves those who are crushed in spirit.",
+      prayer:"Father, they\u2019re carrying a loss that words can\u2019t fix, and You never asked them to be okay. Sit close \u2014 closer than the ache. Catch what they can\u2019t say out loud. And in the days ahead, turn this valley into a place they once met You." },
+    { keys:["lonely","loneliness","alone","isolated","isolation","nobody","invisible","unseen","no friends","left out"],
+      ref:"Deuteronomy 31:6",
+      verse:"Be strong and courageous\u2026 for the Lord your God goes with you; he will never leave you nor forsake you.",
+      prayer:"Father, they feel invisible \u2014 but they were never unseen by You. Walk with them into the rooms where they feel alone. Bring one real friend, one honest conversation, one sign they belong. Until then, be the company they can\u2019t explain." },
+    { keys:["shame","ashamed","guilt","guilty","regret","unforgivable","forgive me","sinned","sin "],
+      ref:"1 John 1:9",
+      verse:"If we confess our sins, he is faithful and just and will forgive us our sins and purify us from all unrighteousness.",
+      prayer:"Father, they\u2019ve been rehearsing their failures \u2014 so we bring them into Your light instead of hiding. Wash it clean. All of it. Replace the replay with Your verdict: forgiven, loved, still called. Let them walk out of this lighter than they walked in." },
+    { keys:["tired","exhausted","weary","burnout","burned out","burden","heavy","drained","can\u2019t keep","cant keep"],
+      ref:"Matthew 11:28",
+      verse:"Come to me, all you who are weary and burdened, and I will give you rest.",
+      prayer:"Father, they\u2019re running on empty and calling it faithfulness. Give them permission to rest \u2014 real rest, the kind only You give. Lift the weight they\u2019ve been carrying alone. Restore their strength while they sleep tonight." },
+    { keys:["sick","illness","cancer","diagnosis","surgery","hospital","pain","heal","disease","doctor"],
+      ref:"Jeremiah 30:17",
+      verse:"But I will restore you to health and heal your wounds, declares the Lord.",
+      prayer:"Father, their body is fighting and their faith is tired. Touch what medicine can\u2019t reach. Give the doctors wisdom, the nights peace, and the waiting purpose. Whether healing comes suddenly or slowly, let them feel You in it." },
+    { keys:["money","bills","debt","job","unemployed","fired","rent","finances","afford","broke","paycheck","business"],
+      ref:"Philippians 4:19",
+      verse:"And my God will meet all your needs according to the riches of his glory in Christ Jesus.",
+      prayer:"Father, the numbers don\u2019t add up and the worry is loud. You own it all, and You\u2019ve never missed a provision yet. Open a door they didn\u2019t knock on. Give them wisdom for the next step and peace for the rest." },
+    { keys:["decision","decide","confused","confusion","direction","stuck","future","choice","path","which way","lost"],
+      ref:"Proverbs 3:5\u20136",
+      verse:"Trust in the Lord with all your heart and lean not on your own understanding; in all your ways submit to him, and he will make your paths straight.",
+      prayer:"Father, they\u2019re standing at a fork with no signposts. Quiet the noise of everyone\u2019s opinions. Make the next step clear \u2014 just the next one. And give them courage to take it, trusting You\u2019re already on the other side." },
+    { keys:["angry","anger","furious","bitter","resentment","hate","rage"],
+      ref:"James 1:19",
+      verse:"Everyone should be quick to listen, slow to speak and slow to become angry.",
+      prayer:"Father, there\u2019s a fire in them \u2014 some of it hurt, some of it justified. Cool what needs cooling. Show them what this anger is protecting, and heal that wound at the root. Make them slow to speak, quick to listen, and free." },
+    { keys:["marriage","husband","wife","divorce","relationship","betrayed","cheating","affair","boyfriend","girlfriend","fiance"],
+      ref:"1 Corinthians 13:4",
+      verse:"Love is patient, love is kind. It does not envy, it does not boast, it is not proud.",
+      prayer:"Father, someone they love is the source of their deepest ache. Where there\u2019s distance, build a bridge. Where there\u2019s betrayal, bring truth and healing. Teach them to love like You do \u2014 patient, kind, and honest \u2014 without losing themselves." },
+    { keys:["addict","drinking","alcohol","drugs","porn","relapse","habit","sober","gambling"],
+      ref:"1 Corinthians 10:13",
+      verse:"No temptation has overtaken you except what is common to mankind. And God is faithful; he will not let you be tempted beyond what you can bear. But when you are tempted, he will also provide a way out so that you can endure it.",
+      prayer:"Father, they\u2019re fighting a battle they\u2019ve lost too many times, and shame is telling them to quit trying. Break the cycle \u2014 provide the way out, the strength to take it, and people who won\u2019t flinch at the truth. One day, one hour, one victory at a time." },
+    { keys:["hopeless","despair","giving up","give up","no hope","pointless"],
+      ref:"Romans 15:13",
+      verse:"May the God of hope fill you with all joy and peace as you trust in him, so that you may overflow with hope by the power of the Holy Spirit.",
+      prayer:"Father, hope feels naive to them right now \u2014 but You are the God of hope, not the god of optimism. Fill the empty places with Your joy and peace. Let them overflow again, not because circumstances changed, but because You showed up." },
+    { keys:["weak","weakness","can\u2019t","cant","impossible","strength","too much"],
+      ref:"Isaiah 41:10",
+      verse:"So do not fear, for I am with you; do not be dismayed, for I am your God. I will strengthen you and help you; I will uphold you with my righteous right hand.",
+      prayer:"Father, they\u2019re out of strength and pretending otherwise. Be their strength today \u2014 hold them up with Your right hand. Replace \u2018I can\u2019t\u2019 with \u2018He can, through me.\u2019 Let them feel carried, not crushed." },
+    { keys:["thankful","grateful","gratitude","blessed","praise","thank you"],
+      ref:"Psalm 107:1",
+      verse:"Give thanks to the Lord, for he is good; his love endures forever.",
+      prayer:"Father, in a world of complaint, they stopped to say thank You \u2014 and heaven noticed. Multiply their gratitude. Let this thankful heart become a well others drink from. Keep blessing what they\u2019ve entrusted to You." },
+    { keys:[],
+      ref:"Psalm 46:1",
+      verse:"God is our refuge and strength, an ever-present help in trouble.",
+      prayer:"Father, they came to the well carrying something heavy \u2014 too heavy to name, too real to ignore. You are their refuge right now, not later. Be their strength in this trouble. Meet them in the quiet, and let them leave lighter than they came." }
+  ];
+  var DEFAULT = BANK[BANK.length - 1];
+
+  function esc(s){
+    return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;")
+      .replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+  }
+  function match(text){
+    var t = " " + text.toLowerCase() + " ";
+    for (var i = 0; i < BANK.length - 1; i++){
+      var keys = BANK[i].keys;
+      for (var j = 0; j < keys.length; j++){
+        if (t.indexOf(keys[j].toLowerCase()) !== -1) return BANK[i];
+      }
+    }
+    return DEFAULT;
+  }
+  function show(id){
+    var screens = document.querySelectorAll(".screen");
+    for (var i = 0; i < screens.length; i++) screens[i].classList.remove("active");
+    $(id).classList.add("active");
+    window.scrollTo(0, 0);
+  }
+
+  $("draw").addEventListener("click", function(){
+    var raw = $("need").value.trim();
+    var hint = $("hint");
+    if (!raw){
+      hint.textContent = "The well is waiting \u2014 give it your honest words first.";
+      var ta = $("need");
+      ta.classList.remove("shake"); void ta.offsetWidth; ta.classList.add("shake");
+      ta.focus();
+      return;
+    }
+    hint.textContent = "";
+    var hit = match(raw);
+    var short = raw.length > 110 ? raw.slice(0, 110).replace(/\s+\S*$/, "") + "\u2026" : raw;
+    $("brought").innerHTML = "What you brought to the well:<br><span>&ldquo;" + esc(short) + "&rdquo;</span>";
+    $("verse").textContent = hit.verse;
+    $("ref").textContent = hit.ref + " \u00B7 NIV";
+    $("prayer").innerHTML = esc(hit.prayer) + ' <span class="amen">In Jesus\u2019 name, amen.</span>';
+    $("crisis").hidden = !hit.crisis;
+    show("screen-well");
+  });
+
+  $("forward").addEventListener("click", function(){ show("screen-forward"); });
+  function reset(){
+    $("need").value = "";
+    $("hint").textContent = "";
+    show("screen-ask");
+    setTimeout(function(){ $("need").focus(); }, 350);
+  }
+  $("again").addEventListener("click", reset);
+  $("again2").addEventListener("click", reset);
+})();
+</script>
+</body>
+</html>
